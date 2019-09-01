@@ -1,0 +1,13 @@
+{
+    "terminal.integrated.env.linux": {
+        "PATH": "/home/brad/.platformio/penv/bin:/home/brad/.platformio/penv:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/share/gcc-arm-none-eabi-8-2018-q4-major/bin:/snap/bin",
+        "PLATFORMIO_CALLER": "vscode"
+    },
+    "files.associations": {
+        "vacuumsolenoid.h": "c",
+        "suctioncupsolenoid.h": "c",
+        "pushbuttonstate.h": "c",
+        "motorstate.h": "c",
+        "fsr.h": "c"
+    }
+}
