@@ -1,8 +1,16 @@
 #include "VacuumPressureSwitch.h"
 #include "PressureSwitchState.h"
+#include <Arduino.h>
 
-PressureSwitchState GetVacuumPressureSwitchState()
+
+VacuumPressureSwitch::VacuumPressureSwitch(int inputPin)
 {
-    //todo: get input here
-    return HAS_VACUUM_PRESSURE;
+    _inputPin = inputPin;
+    pinMode(_inputPin, INPUT_PULLUP);
 }
+
+bool VacuumPressureSwitch::HasVacuum()
+{
+    return digitalRead(_inputPin) == HIGH;
+}
+

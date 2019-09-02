@@ -1,7 +1,18 @@
-#ifndef VACUUMCUPSOLENOID_H
-#define VACUUMCUPSOLENOID_H
+#ifndef VACUUMSOLENOID_H
+#define VACUUMSOLENOID_H
 
-SolenoidState GetVacuumSolenoidState();
-void VacuumSolenoid(SolenoidCommand command);
+class VacuumSolenoid
+{
+private:
+    int _outputPin;
+
+public:
+    VacuumSolenoid(int outputPin);
+    SolenoidState GetState();
+    void Command(SolenoidCommand command);
+};
+
+// SolenoidState GetVacuumSolenoidState();
+// void VacuumSolenoid(SolenoidCommand command);
 
 #endif

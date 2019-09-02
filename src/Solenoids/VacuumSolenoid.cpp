@@ -1,26 +1,31 @@
 #include "SolenoidState.h"
 #include "SolenoidCommand.h"
 #include "VacuumSolenoid.h"
+#include <Arduino.h>
 
-
-
-static SolenoidState state;
-
-SolenoidState GetVacuumSolenoidState()
+VacuumSolenoid::VacuumSolenoid(int outputPin)
 {
-    return state;
+    _outputPin = outputPin;
+    pinMode(outputPin, OUTPUT);
 }
 
-void VacuumSolenoid(SolenoidCommand command)
+SolenoidState VacuumSolenoid::GetState()
+{
+    return digitalRead(_outputPin) == LOW ? ACTIVATED : DEACTICTIVATED;
+}
+
+void VacuumSolenoid::Command(SolenoidCommand command)
 {
     if (command == ACTIVATE)
     {
+        digitalWrite(_outputPin, LOW);
         // set pin state to Activate
-        state = ACTIVATED;
+    
     }
     else
     {
+        pinMode(_outputPin, HIGH);
         // set pin state to Deactivate
-        state = DEACTICTIVATED;
+    
     }
 }

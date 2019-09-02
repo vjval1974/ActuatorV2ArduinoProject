@@ -8,6 +8,7 @@
         "suctioncupsolenoid.h": "c",
         "pushbuttonstate.h": "c",
         "motorstate.h": "c",
-        "fsr.h": "c"
+        "fsr.h": "c",
+        "suctioncupposition.h": "c"
     }
 }

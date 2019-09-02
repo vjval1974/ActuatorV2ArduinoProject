@@ -3,6 +3,16 @@
 
 #include "PressureSwitchState.h"
 
-PressureSwitchState GetVacuumPressureSwitchState();
+class VacuumPressureSwitch 
+{
+    private:
+    int _inputPin;
+
+    public: 
+    VacuumPressureSwitch(int inputPin);
+    bool HasVacuum();
+
+};
+//PressureSwitchState GetVacuumPressureSwitchState();
 
 #endif

@@ -1,18 +1,5 @@
 #include <stdio.h>
-#include "../Motor/MotorState.h"
-#include "../Motor/MotorCommand.h"
-#include "../Motor/Motor.h"
-#include "../Pushbuttons/PushbuttonState.h"
-#include "../Pushbuttons/FsrPushbutton.h"
-#include "../Solenoids/SolenoidState.h"
-#include "../Solenoids/SolenoidCommand.h"
-#include "../Solenoids/SuctionCupSolenoid.h"
-#include "../Solenoids/VacuumSolenoid.h"
-#include "../Fsr/TouchSensor.h"
-#include "../VacuumPressureSwitch/PressureSwitchState.h"
-#include "../VacuumPressureSwitch/VacuumPressureSwitch.h"
-#include "../Solenoids/SuctionCupPosition.h"
-#include "../Solenoids/SuctionCupPositionSwitch.h"
+
 #include "ActuatorStateMachine.h"
 
 typedef enum
@@ -31,16 +18,23 @@ typedef enum
 
 DrivingUpState state = STOPPED;
 
-
-ActuatorStateMachine::ActuatorStateMachine(){}
-
+ActuatorStateMachine::ActuatorStateMachine()
+{
+	startPushbutton = FsrPushbutton(A1, 5);
+	stopPushbutton = FsrPushbutton(A2, 5);
+	touchSensor = TouchSensor(A3, 20, 80);
+	actuatorMotorController = MotorController(PIN1, PIN2, PIN3, PIN4, PIN5);
+	suctionCup = SuctionCup(PIN6, PIN7);
+	vacuumPressureSwitch = VacuumPressureSwitch(PINB0);
+	vacuumSolenoid = VacuumSolenoid(PINB1);
+}
 
 // Sets outputs to safe state
 void ActuatorStateMachine::ResetActions()
 {
 	actuatorMotorController.MotorDrive(MOTOR_STOP);
-	VacuumSolenoid(DEACTIVATE);
-	SuctionCupSolenoid(DEACTIVATE);
+	vacuumSolenoid.Command(DEACTIVATE);
+	suctionCup.Command(DEACTIVATE);
 }
 
 void ActuatorStateMachine::Process()
@@ -55,8 +49,10 @@ void ActuatorStateMachine::Process()
 		ResetActions();
 		//Transition Conditions
 		if (startPushbutton.IsPress() == SINGLE_PRESS &&
-			GetSuctionCupSolenoidState() == DEACTICTIVATED &&
-			GetVacuumSolenoidState() == DEACTICTIVATED &&
+			suctionCup.GetState() == DEACTICTIVATED &&
+			suctionCup.GetPosition() == SUCTION_CUP_LOWERED &&
+			vacuumSolenoid.GetState() == DEACTICTIVATED &&
+			vacuumPressureSwitch.HasVacuum() == false &&
 			touchSensor.GetState() == BELOW_LOWER_THRESHOLD &&
 			actuatorMotorController.GetMotorState() != MOTOR_FAULT)
 		{
@@ -127,7 +123,7 @@ void ActuatorStateMachine::Process()
 		actuatorMotorController.MotorDrive(MOTOR_STOP);
 		// Transition Condition
 		// ensure that the vacuum pressure switch is off and the motor is stopped
-		if (GetVacuumPressureSwitchState() == HAS_NO_VACUUM_PRESSURE && actuatorMotorController.GetMotorState() == MOTOR_STOPPED)
+		if (vacuumPressureSwitch.HasVacuum() == false && actuatorMotorController.GetMotorState() == MOTOR_STOPPED)
 		{
 			state = RAISING_CUP;
 		}
@@ -135,27 +131,27 @@ void ActuatorStateMachine::Process()
 		break;
 	case RAISING_CUP:
 		// Action
-		SuctionCupSolenoid(ACTIVATE);
+		suctionCup.Command(ACTIVATE);
 		// Transition Conditions
-		if (GetSuctionCupPosition() == SUCTION_CUP_RAISED)
+		if (suctionCup.GetPosition() == SUCTION_CUP_RAISED)
 		{
 			state = APPLYING_VACUUM;
 		}
 		break;
 	case APPLYING_VACUUM:
 		// Action
-		VacuumSolenoid(ACTIVATE);
+		vacuumSolenoid.Command(ACTIVATE);
 		// Transition Conditions
-		if (GetVacuumPressureSwitchState() == HAS_VACUUM_PRESSURE)
+		if (vacuumPressureSwitch.HasVacuum() == true)
 		{
 			state = IN_POSITION;
 		}
 		break;
 	case IN_POSITION:
 		// Action
-		SuctionCupSolenoid(DEACTIVATE); // so that the board is rested back on the stop
+		suctionCup.Command(DEACTIVATE); // so that the board is rested back on the stop
 		// Transition Conditions
-		
+
 		break;
 
 	default:
