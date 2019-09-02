@@ -3,20 +3,17 @@
 #include "../Motor/MotorCommand.h"
 #include "../Motor/Motor.h"
 #include "../Pushbuttons/PushbuttonState.h"
-#include "../Pushbuttons/DownPushbutton.h"
-#include "../Pushbuttons/UpPushbutton.h"
-#include "../Pushbuttons/StopPushbutton.h"
+#include "../Pushbuttons/FsrPushbutton.h"
 #include "../Solenoids/SolenoidState.h"
 #include "../Solenoids/SolenoidCommand.h"
 #include "../Solenoids/SuctionCupSolenoid.h"
 #include "../Solenoids/VacuumSolenoid.h"
-#include "../Fsr/FsrState.h"
-#include "../Fsr/Fsr.h"
+#include "../Fsr/TouchSensor.h"
 #include "../VacuumPressureSwitch/PressureSwitchState.h"
 #include "../VacuumPressureSwitch/VacuumPressureSwitch.h"
 #include "../Solenoids/SuctionCupPosition.h"
 #include "../Solenoids/SuctionCupPositionSwitch.h"
-#include "DriveUpStateMachine.h"
+#include "ActuatorStateMachine.h"
 
 typedef enum
 {
@@ -34,41 +31,48 @@ typedef enum
 
 DrivingUpState state = STOPPED;
 
+
+ActuatorStateMachine::ActuatorStateMachine(){}
+
+
 // Sets outputs to safe state
-void ResetActions()
+void ActuatorStateMachine::ResetActions()
 {
-	MotorDrive(MOTOR_STOP);
+	actuatorMotorController.MotorDrive(MOTOR_STOP);
 	VacuumSolenoid(DEACTIVATE);
 	SuctionCupSolenoid(DEACTIVATE);
 }
 
-void DriveUpStateMachine()
+void ActuatorStateMachine::Process()
 {
+	startPushbutton.PollPresses();
+	stopPushbutton.PollPresses();
+
 	switch (state)
 	{
 	case STOPPED:
 		//Action
 		ResetActions();
 		//Transition Conditions
-		if (GetUpPushbuttonState() == PB_DOWN &&
+		if (startPushbutton.IsPress() == SINGLE_PRESS &&
 			GetSuctionCupSolenoidState() == DEACTICTIVATED &&
 			GetVacuumSolenoidState() == DEACTICTIVATED &&
-			GetFsrState() == BELOW_LOWER_THRESHOLD &&
-			GetMotorState() != MOTOR_FAULT)
+			touchSensor.GetState() == BELOW_LOWER_THRESHOLD &&
+			actuatorMotorController.GetMotorState() != MOTOR_FAULT)
 		{
 			state = DRIVING_UP;
 		}
 		break;
 	case DRIVING_UP:
 		//Action
-		MotorDrive(DRIVE_UP_FAST);
+		actuatorMotorController.MotorDrive(DRIVE_UP_FAST);
 
 		//Transition Conditions
-		if (GetFsrState() == ABOVE_LOWER_THRESHOLD)
+		if (touchSensor.GetState() == ABOVE_LOWER_THRESHOLD)
 		{
 			state = BOARD_SENSED;
 		}
-		if (GetFsrState() == ABOVE_UPPER_THRESHOLD)
+		if (touchSensor.GetState() == ABOVE_UPPER_THRESHOLD)
 		{
 			// shouldnt get here but put here for safety
 			state = TUNING_DOWN;
@@ -77,14 +81,14 @@ void DriveUpStateMachine()
 
 	case BOARD_SENSED:
 		// Action
-		MotorDrive(MOTOR_STOP);
+		actuatorMotorController.MotorDrive(MOTOR_STOP);
 
 		// Transition Conditions
-		if (GetFsrState() == ABOVE_LOWER_THRESHOLD)
+		if (touchSensor.GetState() == ABOVE_LOWER_THRESHOLD)
 		{
 			state = AT_BOARD;
 		}
-		if (GetFsrState() == ABOVE_UPPER_THRESHOLD)
+		if (touchSensor.GetState() == ABOVE_UPPER_THRESHOLD)
 		{
 			// shouldnt get here but put here for safety
 			state = TUNING_DOWN;
@@ -92,27 +96,27 @@ void DriveUpStateMachine()
 		break;
 	case TUNING_DOWN:
 		// Action
-		MotorDrive(DRIVE_DOWN_SLOW);
+		actuatorMotorController.MotorDrive(DRIVE_DOWN_SLOW);
 		// Transition Conditions
-		if (GetFsrState() == ABOVE_LOWER_THRESHOLD)
+		if (touchSensor.GetState() == ABOVE_LOWER_THRESHOLD)
 		{
 			state = AT_BOARD;
 		}
-		if (GetFsrState() == BELOW_LOWER_THRESHOLD)
+		if (touchSensor.GetState() == BELOW_LOWER_THRESHOLD)
 		{
 			state = TUNING_UP;
 		}
 		break;
 	case TUNING_UP:
 		// Action
-		MotorDrive(DRIVE_UP_SLOW);
+		actuatorMotorController.MotorDrive(DRIVE_UP_SLOW);
 
 		// Transition Conditions
-		if (GetFsrState() == ABOVE_LOWER_THRESHOLD)
+		if (touchSensor.GetState() == ABOVE_LOWER_THRESHOLD)
 		{
 			state = AT_BOARD;
 		}
-		if (GetFsrState() == ABOVE_UPPER_THRESHOLD)
+		if (touchSensor.GetState() == ABOVE_UPPER_THRESHOLD)
 		{
 			// shouldnt get here but put here for safety
 			state = TUNING_DOWN;
@@ -120,10 +124,10 @@ void DriveUpStateMachine()
 		break;
 	case AT_BOARD:
 		// Action
-		MotorDrive(MOTOR_STOP);
+		actuatorMotorController.MotorDrive(MOTOR_STOP);
 		// Transition Condition
 		// ensure that the vacuum pressure switch is off and the motor is stopped
-		if (GetVacuumPressureSwitchState() == HAS_NO_VACUUM_PRESSURE && GetMotorState() == MOTOR_STOPPED)
+		if (GetVacuumPressureSwitchState() == HAS_NO_VACUUM_PRESSURE && actuatorMotorController.GetMotorState() == MOTOR_STOPPED)
 		{
 			state = RAISING_CUP;
 		}

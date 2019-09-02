@@ -1,10 +1,10 @@
 #include <Arduino.h>
-#include "./StateMachines/DriveUpStateMachine.h"
+#include "./StateMachines/ActuatorStateMachine.h"
 #include "./Pushbuttons/FsrPushbutton.h"
 
 // buttons
-FsrPushbutton upPushbutton = FsrPushbutton(A1, 5);
-FsrPushbutton downPushbutton = FsrPushbutton(A2, 5);
+ActuatorStateMachine actuatorStateMachine = ActuatorStateMachine();
+FsrPushbutton testPushbutton = FsrPushbutton(A1, 5);
 
 void setup()
 {
@@ -12,8 +12,8 @@ void setup()
 	pinMode(A0, OUTPUT);
 
 
-	upPushbutton = FsrPushbutton(A1, 5);
-	downPushbutton = FsrPushbutton(A2, 5);
+	testPushbutton = FsrPushbutton(A1, 5);
+	
 	
 	delay(5000);
 	//ClearArray(valueArray, ARRAY_LENGTH);
@@ -23,9 +23,9 @@ void setup()
 
 void loop()
 {
-	//DriveUpStateMachine();
+	actuatorStateMachine.Process();
 	
-	PressState bar = upPushbutton.IsPress();
+	PressState bar = testPushbutton.IsPress();
 	if (bar == SINGLE_PRESS)
 	{
 		Serial.println("SINGLE PRESS: ");
@@ -33,7 +33,7 @@ void loop()
 	if (bar == DOUBLE_PRESS)
 		Serial.println("DOUBLE PRESS: ");
 
-	upPushbutton.PollPresses();
+	testPushbutton.PollPresses();
 
 	delay(100);
 }
