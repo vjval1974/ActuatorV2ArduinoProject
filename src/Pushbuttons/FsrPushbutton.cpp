@@ -5,7 +5,6 @@
 
 static bool HasExceededThresholdInLastNCounts(uint8_t *array, uint8_t len, uint8_t thresh);
 
-
 FsrPushbutton::FsrPushbutton(int analogInput, uint8_t numSpacesForTimeout)
 {
     _analogInput = analogInput;
@@ -14,7 +13,7 @@ FsrPushbutton::FsrPushbutton(int analogInput, uint8_t numSpacesForTimeout)
     _oneReleaseCount = 0;
     _hasTwoReleases = false;
     pinMode(analogInput, INPUT);
-   
+
     ArrayHelper::ClearArray(valueArray, ARRAY_LENGTH);
 }
 
@@ -65,21 +64,20 @@ bool FsrPushbutton::IsDownPress()
 
 bool FsrPushbutton::IsRelease()
 {
-    // we want to find when we have a zero reading and previous readings are above 
-    // a set threshold. This is to reduce false readings (blips). 
-    return (valueArray[1] > (uint8_t)0 
-            && valueArray[0] == 0
-            && HasExceededThresholdInLastNCounts(valueArray, 5, 100) 
-            );
+    // we want to find when we have a zero reading and previous readings are above
+    // a set threshold. This is to reduce false readings (blips).
+    return (valueArray[1] > (uint8_t)0 && valueArray[0] == 0 && HasExceededThresholdInLastNCounts(valueArray, 5, 100));
 }
 
 static bool HasExceededThresholdInLastNCounts(uint8_t *array, uint8_t len, uint8_t thresh)
 {
-    ArrayHelper::PrintArray(array, len);
+// #ifdef DEBUG_MODE
+//     ArrayHelper::PrintArray(array, len);
+// #endif
     for (int ii = 0; ii < len; ii++)
     {
         if (array[ii] > thresh)
-        return true;
+            return true;
     }
     return false;
 }

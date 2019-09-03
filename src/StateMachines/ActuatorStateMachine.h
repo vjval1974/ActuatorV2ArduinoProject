@@ -33,8 +33,11 @@ class ActuatorStateMachine {
 	VacuumPressureSwitch vacuumPressureSwitch = VacuumPressureSwitch(PINB0);
 	VacuumSolenoid vacuumSolenoid = VacuumSolenoid(PINB1);
     ActuatorState state;
+	ActuatorState previousState;
 
     void ResetActions();
+	static bool ShouldTransitionOnPress(PressState state);
+    static void PrintStateTransition(ActuatorState state, ActuatorState previousState);
 
 public:
     ActuatorStateMachine();
