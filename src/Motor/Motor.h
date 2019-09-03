@@ -11,6 +11,7 @@ class MotorController
     int _stopPin; 
     int _speed2Pin;
     int _faultPin; 
+    MotorState _state;
 
     public: 
     MotorController(int fwPin, int bwPin, int stopPin, int speed2Pin, int faultPin);

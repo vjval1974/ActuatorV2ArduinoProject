@@ -10,6 +10,7 @@ class SuctionCup
 private:
     int _outputPin;
     int _positionInputPin;
+    SolenoidState _state;
 
 public:
     SuctionCup(int outputPin, int positionInputPin);

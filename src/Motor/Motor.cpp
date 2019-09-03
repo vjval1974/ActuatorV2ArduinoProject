@@ -4,7 +4,6 @@
 #include "Motor.h"
 #include <Arduino.h>
 
-static MotorState state;
 #define PWM_FAST 90
 #define PWM_SLOW 20
 
@@ -15,7 +14,7 @@ MotorController::MotorController(int fwPin, int bwPin, int stopPin, int speed2Pi
     _stopPin = stopPin;
     _speed2Pin = speed2Pin;
     _faultPin = faultPin;
-
+    _state = MOTOR_STOPPED;
     pinMode(_fwPin, OUTPUT);
     digitalWrite(_fwPin, HIGH);
     pinMode(_bwPin, OUTPUT);
@@ -31,7 +30,7 @@ MotorState MotorController::GetMotorState()
 {
     // todo: what happens if the controller returns a fault?
 
-    return state;
+    return _state;
 }
 
 bool MotorController::HasFault()
@@ -50,7 +49,7 @@ void MotorController::MotorDrive(MotorCommand command)
         // set enabled to true
         digitalWrite(_stopPin, HIGH);
         // set speed
-        state = MOTOR_DRIVING_UP;
+        _state = MOTOR_DRIVING_UP;
         digitalWrite(_speed2Pin, HIGH);
         break;
     case DRIVE_UP_SLOW:
@@ -60,9 +59,9 @@ void MotorController::MotorDrive(MotorCommand command)
         // set enabled to true
         digitalWrite(_stopPin, HIGH);
         // set speed
-        state = MOTOR_DRIVING_UP;
+        _state = MOTOR_DRIVING_UP;
         digitalWrite(_speed2Pin, LOW);
-        state = MOTOR_DRIVING_UP;
+        _state = MOTOR_DRIVING_UP;
         break;
     case DRIVE_DOWN_FAST:
         // set dir to down
@@ -74,7 +73,7 @@ void MotorController::MotorDrive(MotorCommand command)
         digitalWrite(_stopPin, HIGH);
         // set speed
         digitalWrite(_speed2Pin, HIGH);
-        state = MOTOR_DRIVING_DOWN;
+        _state = MOTOR_DRIVING_DOWN;
         break;
     case DRIVE_DOWN_SLOW:
         // set dir to down
@@ -86,14 +85,14 @@ void MotorController::MotorDrive(MotorCommand command)
         digitalWrite(_stopPin, HIGH);
         // set speed
         digitalWrite(_speed2Pin, LOW);
-        state = MOTOR_DRIVING_DOWN;
+        _state = MOTOR_DRIVING_DOWN;
         break;
     case MOTOR_STOP:
         digitalWrite(_fwPin, HIGH);
         digitalWrite(_bwPin, HIGH);
         digitalWrite(_stopPin, HIGH);
         digitalWrite(_speed2Pin, HIGH);
-        state = MOTOR_STOPPED;
+        _state = MOTOR_STOPPED;
 
     default:
         break;

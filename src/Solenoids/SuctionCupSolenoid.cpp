@@ -16,11 +16,11 @@ SuctionCupPosition SuctionCup::GetPosition()
                : SUCTION_CUP_LOWERED;
 }
 
-static SolenoidState state;
+
 
 SolenoidState SuctionCup::GetState()
 {
-    return state;
+    return _state;
 }
 
 void SuctionCup::Command(SolenoidCommand command)
@@ -29,11 +29,11 @@ void SuctionCup::Command(SolenoidCommand command)
     {
         // set pin state to Activate
 
-        state = ACTIVATED;
+        _state = ACTIVATED;
     }
     else
     {
         // set pin state to Deactivate
-        state = DEACTICTIVATED;
+        _state = DEACTICTIVATED;
     }
 }
