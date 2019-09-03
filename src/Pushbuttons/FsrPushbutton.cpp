@@ -7,6 +7,9 @@ FsrPushbutton::FsrPushbutton(int analogInput, uint8_t numSpacesForTimeout)
 {
     _analogInput = analogInput;
     _numSpacesForTimeout = numSpacesForTimeout;
+    _hasOneRelease = false;
+    _oneReleaseCount = 0;
+    _hasTwoReleases = false;
     pinMode(analogInput, INPUT);
     ArrayHelper::ClearArray(valueArray, ARRAY_LENGTH);
 }
@@ -24,29 +27,26 @@ void FsrPushbutton::PollPresses()
 
 PressState FsrPushbutton::IsPress()
 {
-    static bool hasOneRelease = false;
-    static uint8_t oneReleaseCount = 0;
-    static bool hasTwoReleases = false;
     PressState retval = NOT_PRESSED;
-    if (!hasOneRelease)
+    if (!_hasOneRelease)
     {
-        hasOneRelease = IsRelease();
+        _hasOneRelease = IsRelease();
     }
 
-    if (hasOneRelease)
+    if (_hasOneRelease)
     {
-        oneReleaseCount++;
+        _oneReleaseCount++;
 
-        if (oneReleaseCount >= 2 && hasTwoReleases == false)
+        if (_oneReleaseCount >= 2 && _hasTwoReleases == false)
         {
-            hasTwoReleases = IsRelease();
+            _hasTwoReleases = IsRelease();
         }
-        if (oneReleaseCount > _numSpacesForTimeout)
+        if (_oneReleaseCount > _numSpacesForTimeout)
         {
-            retval = hasTwoReleases ? DOUBLE_PRESS : SINGLE_PRESS;
-            hasOneRelease = false;
-            hasTwoReleases = false;
-            oneReleaseCount = 0;
+            retval = _hasTwoReleases ? DOUBLE_PRESS : SINGLE_PRESS;
+            _hasOneRelease = false;
+            _hasTwoReleases = false;
+            _oneReleaseCount = 0;
         }
     }
 

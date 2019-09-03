@@ -16,6 +16,9 @@ class FsrPushbutton
 private:
     uint8_t valueArray[ARRAY_LENGTH];
     uint8_t _numSpacesForTimeout;
+    bool _hasOneRelease;
+    uint8_t _oneReleaseCount;
+    bool _hasTwoReleases;
     int _analogInput;
     PressState currentPressState = NOT_PRESSED;
 
