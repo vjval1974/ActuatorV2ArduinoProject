@@ -1,22 +1,25 @@
 #include <stdio.h>
 
 #include "ActuatorStateMachine.h"
+#define DEBUG_MODE 1
 
-typedef enum
+String statesText[10] =
+	{"STOPPED",
+	 "ERROR",
+	 "DRIVING_UP",
+	 "BOARD_SENSED",
+	 "TUNING_UP",
+	 "TUNING_DOWN",
+	 "AT_BOARD",
+	 "RAISING_CUP",
+	 "APPLYING_VACUUM",
+	 "IN_POSITION"};
+
+void PrintStateTransition(ActuatorState state)
 {
-	STOPPED,
-	ERROR,
-	DRIVING_UP,
-	BOARD_SENSED,
-	TUNING_UP,
-	TUNING_DOWN,
-	AT_BOARD,
-	RAISING_CUP,
-	APPLYING_VACUUM,
-	IN_POSITION
-} DrivingUpState;
-
-DrivingUpState state = STOPPED;
+	Serial.print("Transitioning State to ");
+	Serial.println(statesText[state]);
+}
 
 ActuatorStateMachine::ActuatorStateMachine()
 {
@@ -27,6 +30,7 @@ ActuatorStateMachine::ActuatorStateMachine()
 	suctionCup = SuctionCup(PIN6, PIN7);
 	vacuumPressureSwitch = VacuumPressureSwitch(PINB0);
 	vacuumSolenoid = VacuumSolenoid(PINB1);
+	state = STOPPED;
 }
 
 // Sets outputs to safe state
@@ -41,22 +45,32 @@ void ActuatorStateMachine::Process()
 {
 	startPushbutton.PollPresses();
 	stopPushbutton.PollPresses();
+	PressState startButtonState = startPushbutton.IsPress();
+	//PressState stopButtonState = stopPushbutton.IsPress();
 
 	switch (state)
 	{
 	case STOPPED:
 		//Action
 		ResetActions();
+
 		//Transition Conditions
-		if (startPushbutton.IsPress() == SINGLE_PRESS &&
-			suctionCup.GetState() == DEACTICTIVATED &&
-			suctionCup.GetPosition() == SUCTION_CUP_LOWERED &&
-			vacuumSolenoid.GetState() == DEACTICTIVATED &&
-			vacuumPressureSwitch.HasVacuum() == false &&
-			touchSensor.GetState() == BELOW_LOWER_THRESHOLD &&
-			actuatorMotorController.GetMotorState() != MOTOR_FAULT)
+		if ((startButtonState == SINGLE_PRESS &&
+			 suctionCup.GetState() == DEACTICTIVATED &&
+			 suctionCup.GetPosition() == SUCTION_CUP_LOWERED &&
+			 vacuumSolenoid.GetState() == DEACTICTIVATED &&
+			 vacuumPressureSwitch.HasVacuum() == false &&
+			 touchSensor.GetState() == BELOW_LOWER_THRESHOLD &&
+			 actuatorMotorController.GetMotorState() != MOTOR_FAULT)
+#ifdef DEBUG_MODE
+			|| startButtonState == SINGLE_PRESS
+#endif
+		)
 		{
 			state = DRIVING_UP;
+#ifdef DEBUG_MODE
+			PrintStateTransition(state);
+#endif
 		}
 		break;
 	case DRIVING_UP:
@@ -64,14 +78,29 @@ void ActuatorStateMachine::Process()
 		actuatorMotorController.MotorDrive(DRIVE_UP_FAST);
 
 		//Transition Conditions
-		if (touchSensor.GetState() == ABOVE_LOWER_THRESHOLD)
+		if (touchSensor.GetState() == ABOVE_LOWER_THRESHOLD
+#ifdef DEBUG_MODE
+			|| startButtonState == SINGLE_PRESS
+#endif
+
+		)
 		{
 			state = BOARD_SENSED;
+#ifdef DEBUG_MODE
+			PrintStateTransition(state);
+#endif
 		}
-		if (touchSensor.GetState() == ABOVE_UPPER_THRESHOLD)
+		if (touchSensor.GetState() == ABOVE_UPPER_THRESHOLD
+#ifdef DEBUG_MODE
+			|| startButtonState == SINGLE_PRESS
+#endif
+		)
 		{
 			// shouldnt get here but put here for safety
 			state = TUNING_DOWN;
+#ifdef DEBUG_MODE
+			PrintStateTransition(state);
+#endif
 		}
 		break;
 
@@ -80,14 +109,24 @@ void ActuatorStateMachine::Process()
 		actuatorMotorController.MotorDrive(MOTOR_STOP);
 
 		// Transition Conditions
-		if (touchSensor.GetState() == ABOVE_LOWER_THRESHOLD)
+		if (touchSensor.GetState() == ABOVE_LOWER_THRESHOLD
+#ifdef DEBUG_MODE
+			|| startButtonState == SINGLE_PRESS
+#endif
+		)
 		{
 			state = AT_BOARD;
+#ifdef DEBUG_MODE
+			PrintStateTransition(state);
+#endif
 		}
 		if (touchSensor.GetState() == ABOVE_UPPER_THRESHOLD)
 		{
 			// shouldnt get here but put here for safety
 			state = TUNING_DOWN;
+#ifdef DEBUG_MODE
+			PrintStateTransition(state);
+#endif
 		}
 		break;
 	case TUNING_DOWN:
@@ -97,10 +136,16 @@ void ActuatorStateMachine::Process()
 		if (touchSensor.GetState() == ABOVE_LOWER_THRESHOLD)
 		{
 			state = AT_BOARD;
+#ifdef DEBUG_MODE
+			PrintStateTransition(state);
+#endif
 		}
 		if (touchSensor.GetState() == BELOW_LOWER_THRESHOLD)
 		{
 			state = TUNING_UP;
+#ifdef DEBUG_MODE
+			PrintStateTransition(state);
+#endif
 		}
 		break;
 	case TUNING_UP:
@@ -111,11 +156,17 @@ void ActuatorStateMachine::Process()
 		if (touchSensor.GetState() == ABOVE_LOWER_THRESHOLD)
 		{
 			state = AT_BOARD;
+#ifdef DEBUG_MODE
+			PrintStateTransition(state);
+#endif
 		}
 		if (touchSensor.GetState() == ABOVE_UPPER_THRESHOLD)
 		{
 			// shouldnt get here but put here for safety
 			state = TUNING_DOWN;
+#ifdef DEBUG_MODE
+			PrintStateTransition(state);
+#endif
 		}
 		break;
 	case AT_BOARD:
@@ -126,6 +177,9 @@ void ActuatorStateMachine::Process()
 		if (vacuumPressureSwitch.HasVacuum() == false && actuatorMotorController.GetMotorState() == MOTOR_STOPPED)
 		{
 			state = RAISING_CUP;
+#ifdef DEBUG_MODE
+			PrintStateTransition(state);
+#endif
 		}
 
 		break;
@@ -136,6 +190,9 @@ void ActuatorStateMachine::Process()
 		if (suctionCup.GetPosition() == SUCTION_CUP_RAISED)
 		{
 			state = APPLYING_VACUUM;
+#ifdef DEBUG_MODE
+			PrintStateTransition(state);
+#endif
 		}
 		break;
 	case APPLYING_VACUUM:
@@ -145,6 +202,9 @@ void ActuatorStateMachine::Process()
 		if (vacuumPressureSwitch.HasVacuum() == true)
 		{
 			state = IN_POSITION;
+#ifdef DEBUG_MODE
+			PrintStateTransition(state);
+#endif
 		}
 		break;
 	case IN_POSITION:

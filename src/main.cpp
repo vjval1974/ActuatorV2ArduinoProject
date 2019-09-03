@@ -12,12 +12,12 @@ void setup()
 	pinMode(A0, OUTPUT);
 
 
-	testPushbutton = FsrPushbutton(A1, 5);
+//	testPushbutton = FsrPushbutton(A1, 5);
 	
 	
 	delay(5000);
 	//ClearArray(valueArray, ARRAY_LENGTH);
-	Serial.print("Delayed");
+	Serial.println("Delayed");
 	// put your setup code here, to run once:
 }
 
@@ -25,15 +25,15 @@ void loop()
 {
 	actuatorStateMachine.Process();
 	
-	PressState bar = testPushbutton.IsPress();
-	if (bar == SINGLE_PRESS)
-	{
-		Serial.println("SINGLE PRESS: ");
-	}
-	if (bar == DOUBLE_PRESS)
-		Serial.println("DOUBLE PRESS: ");
+	// PressState bar = testPushbutton.IsPress();
+	// if (bar == SINGLE_PRESS)
+	// {
+	// 	Serial.println("SINGLE PRESS: ");
+	// }
+	// if (bar == DOUBLE_PRESS)
+	// 	Serial.println("DOUBLE PRESS: ");
 
-	testPushbutton.PollPresses();
+	// testPushbutton.PollPresses();
 
 	delay(100);
 }

@@ -11,6 +11,7 @@ void ArrayHelper::PrintArray(uint8_t *array, uint8_t len)
 		Serial.print(array[i]);
 		Serial.print(", ");
 	}
+	Serial.println(" ");
 	Serial.println("========================");
 }
 

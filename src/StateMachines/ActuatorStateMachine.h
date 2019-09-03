@@ -9,6 +9,20 @@
 #include "../Fsr/TouchSensor.h"
 
 
+typedef enum
+{
+	STOPPED,
+	ERROR,
+	DRIVING_UP,
+	BOARD_SENSED,
+	TUNING_UP,
+	TUNING_DOWN,
+	AT_BOARD,
+	RAISING_CUP,
+	APPLYING_VACUUM,
+	IN_POSITION
+} ActuatorState;
+
 class ActuatorStateMachine {
     private:
     FsrPushbutton startPushbutton = FsrPushbutton(A1, 5);
@@ -18,7 +32,7 @@ class ActuatorStateMachine {
 	SuctionCup suctionCup = SuctionCup(PIN6, PIN7);
 	VacuumPressureSwitch vacuumPressureSwitch = VacuumPressureSwitch(PINB0);
 	VacuumSolenoid vacuumSolenoid = VacuumSolenoid(PINB1);
-
+    ActuatorState state;
 
     void ResetActions();
 

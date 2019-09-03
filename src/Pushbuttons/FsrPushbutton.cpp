@@ -3,6 +3,9 @@
 #include "FsrPushbutton.h"
 #include "../Helpers/ArrayHelper.h"
 
+static bool HasExceededThresholdInLastNCounts(uint8_t *array, uint8_t len, uint8_t thresh);
+
+
 FsrPushbutton::FsrPushbutton(int analogInput, uint8_t numSpacesForTimeout)
 {
     _analogInput = analogInput;
@@ -11,6 +14,7 @@ FsrPushbutton::FsrPushbutton(int analogInput, uint8_t numSpacesForTimeout)
     _oneReleaseCount = 0;
     _hasTwoReleases = false;
     pinMode(analogInput, INPUT);
+   
     ArrayHelper::ClearArray(valueArray, ARRAY_LENGTH);
 }
 
@@ -28,9 +32,10 @@ void FsrPushbutton::PollPresses()
 PressState FsrPushbutton::IsPress()
 {
     PressState retval = NOT_PRESSED;
+    bool isRelease = IsRelease();
     if (!_hasOneRelease)
     {
-        _hasOneRelease = IsRelease();
+        _hasOneRelease = isRelease;
     }
 
     if (_hasOneRelease)
@@ -39,7 +44,7 @@ PressState FsrPushbutton::IsPress()
 
         if (_oneReleaseCount >= 2 && _hasTwoReleases == false)
         {
-            _hasTwoReleases = IsRelease();
+            _hasTwoReleases = isRelease;
         }
         if (_oneReleaseCount > _numSpacesForTimeout)
         {
@@ -60,5 +65,21 @@ bool FsrPushbutton::IsDownPress()
 
 bool FsrPushbutton::IsRelease()
 {
-    return (valueArray[1] > (uint8_t)1 && valueArray[0] == 0);
+    // we want to find when we have a zero reading and previous readings are above 
+    // a set threshold. This is to reduce false readings (blips). 
+    return (valueArray[1] > (uint8_t)0 
+            && valueArray[0] == 0
+            && HasExceededThresholdInLastNCounts(valueArray, 5, 100) 
+            );
+}
+
+static bool HasExceededThresholdInLastNCounts(uint8_t *array, uint8_t len, uint8_t thresh)
+{
+    ArrayHelper::PrintArray(array, len);
+    for (int ii = 0; ii < len; ii++)
+    {
+        if (array[ii] > thresh)
+        return true;
+    }
+    return false;
 }

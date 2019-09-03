@@ -4,7 +4,6 @@
 
 // todo: correct this. Take 0 as lower and 1024 as top
 
-
 TouchSensor::TouchSensor(int inputPin, int lowerThresholdPct, int upperThresholdPct)
 {
     _inputPin = inputPin;
@@ -21,16 +20,18 @@ int TouchSensor::GetFsrPct()
 FsrState TouchSensor::GetState(void)
 {
     // check analag input value
-    // filter 
-     int fsrValue = GetFsrPct();
-
-    if (fsrValue <= _lowerThresholdPct )
-        return BELOW_LOWER_THRESHOLD;   
+    // filter
+    int fsrValue = GetFsrPct();
+#ifdef DEBUG_MODE
+    Serial.print("Touch Sensor value: ");
+    Serial.println(fsrValue);
+#endif
+    if (fsrValue <= _lowerThresholdPct)
+        return BELOW_LOWER_THRESHOLD;
 
     else if (fsrValue <= _upperThresholdPct)
         return ABOVE_LOWER_THRESHOLD;
 
-    else 
+    else
         return ABOVE_UPPER_THRESHOLD;
-
 }
