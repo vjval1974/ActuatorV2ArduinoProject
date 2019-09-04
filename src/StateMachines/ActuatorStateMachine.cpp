@@ -38,13 +38,13 @@ bool ActuatorStateMachine::ShouldTransitionOnPress(PressState state)
 
 ActuatorStateMachine::ActuatorStateMachine()
 {
-	startPushbutton = FsrPushbutton(A1, 5);
-	stopPushbutton = FsrPushbutton(A2, 5);
-	touchSensor = TouchSensor(A1, 20, 80);
-	actuatorMotorController = MotorController(PIN1, PIN2, PIN3, PIN4, PIN5);
-	suctionCup = SuctionCup(PIN6, PIN7);
-	vacuumPressureSwitch = VacuumPressureSwitch(PINB0);
-	vacuumSolenoid = VacuumSolenoid(PINB1);
+	startPushbutton = FsrPushbutton(A0, 5);
+	stopPushbutton = FsrPushbutton(A1, 5);
+	touchSensor = TouchSensor(A2, 20, 80);
+	actuatorMotorController = MotorController(); // default pins set in constructor 
+	suctionCup = SuctionCup(8, 9);
+	vacuumPressureSwitch = VacuumPressureSwitch(10);
+	vacuumSolenoid = VacuumSolenoid(14);
 	state = STOPPED;
 	previousState = STOPPED;
 }

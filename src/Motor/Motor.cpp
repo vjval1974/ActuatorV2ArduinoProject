@@ -26,6 +26,12 @@ MotorController::MotorController(int fwPin, int bwPin, int stopPin, int speed2Pi
     pinMode(_faultPin, INPUT_PULLUP);
 }
 
+// default constructor to set pins.
+MotorController::MotorController()
+{
+    MotorController(2, 3, 4, 5, 6);
+}
+
 MotorState MotorController::GetMotorState()
 {
     // todo: what happens if the controller returns a fault?

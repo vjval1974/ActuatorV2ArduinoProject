@@ -15,6 +15,7 @@ class MotorController
 
     public: 
     MotorController(int fwPin, int bwPin, int stopPin, int speed2Pin, int faultPin);
+    MotorController();
     
     void MotorDrive(MotorCommand command);
     MotorState GetMotorState();
