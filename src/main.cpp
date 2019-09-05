@@ -56,32 +56,43 @@ PIN A3
 
 
 ActuatorStateMachine actuatorStateMachine = ActuatorStateMachine();
-FsrPushbutton testPushbutton = FsrPushbutton(A1, 5);
+FsrPushbutton testPushbutton1 = FsrPushbutton(A0, 5);
+FsrPushbutton testPushbutton2 = FsrPushbutton(A2, 5);
 
 void setup()
 {
 	Serial.begin(115200);
-	pinMode(A0, INPUT);
-	//pinMode(8, OUTPUT); // example
-	//	testPushbutton = FsrPushbutton(A1, 5);
+		
+	testPushbutton1 = FsrPushbutton(A0, 5);
+	testPushbutton2 = FsrPushbutton(A2, 5);
 
 	delay(1000);
-	//ClearArray(valueArray, ARRAY_LENGTH);
+	
 	Serial.println("Started");
 	
 }
 
 void loop()
 {
-	actuatorStateMachine.Process();
+	//actuatorStateMachine.Process();
 
-	// PressState bar = testPushbutton.IsPress();
-	// if (bar == SINGLE_PRESS)
-	// {
-	// 	Serial.println("SINGLE PRESS: ");
-	// }
-	// if (bar == DOUBLE_PRESS)
-	// 	Serial.println("DOUBLE PRESS: ");
+
+	testPushbutton1.PollPresses();
+	testPushbutton2.PollPresses();
+
+	PressState tpb1State = testPushbutton1.IsPress();
+	PressState tpb2State = testPushbutton2.IsPress();
+	if (tpb1State == SINGLE_PRESS)
+		Serial.println("Button 1: SINGLE PRESS: ");
+	if (tpb1State == DOUBLE_PRESS)
+		Serial.println("Button 1: DOUBLE PRESS: ");
+
+	if (tpb2State == SINGLE_PRESS)
+		Serial.println("Button 2: SINGLE PRESS: ");
+	if (tpb2State == DOUBLE_PRESS)
+		Serial.println("Button 2: DOUBLE PRESS: ");
+
+
 	delay(100);
 	
 }
