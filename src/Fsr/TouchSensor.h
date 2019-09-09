@@ -6,7 +6,7 @@
 class TouchSensor
 {
 private:
-    int GetFsrPct();
+    
     int _inputPin;
     int _lowerThresholdPct;
     int _upperThresholdPct;
@@ -14,6 +14,7 @@ private:
 public:
     TouchSensor(int inputPin, int lowerThresholdPct, int upperThresholdPct);
     FsrState GetState(void);
+    int GetFsrPct();
 };
 
 #endif

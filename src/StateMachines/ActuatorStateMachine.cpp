@@ -2,10 +2,11 @@
 
 #include "ActuatorStateMachine.h"
 
-String statesText[10] =
+String statesText[11] =
 	{"STOPPED",
 	 "ERROR",
 	 "DRIVING_UP",
+	 "DRIVING_DOWN",
 	 "BOARD_SENSED",
 	 "TUNING_UP",
 	 "TUNING_DOWN",
@@ -14,7 +15,7 @@ String statesText[10] =
 	 "APPLYING_VACUUM",
 	 "IN_POSITION"};
 
-void ActuatorStateMachine::PrintStateTransition(ActuatorState state, ActuatorState previousState)
+void ActuatorStateMachine::PrintStateTransition(ActuatorState state, ActuatorState previousState, TouchSensor sensor)
 {
 #ifdef DEBUG_MODE
 	if (state != previousState)
@@ -22,15 +23,62 @@ void ActuatorStateMachine::PrintStateTransition(ActuatorState state, ActuatorSta
 		Serial.print("Transitioning State from ");
 		Serial.print(statesText[previousState]);
 		Serial.print(" to ");
-		Serial.println(statesText[state]);
+		Serial.print(statesText[state]);
+		Serial.print(". Sensor = ");
+		Serial.print(sensor.GetFsrPct());
+		Serial.println("%");
 	}
 #endif
+#ifdef LOG_MODE
+	{
+		static unsigned long cycleCount = 0;
+		static uint8_t boardSensedCount = 0;
+		static uint8_t tuningUpCount = 0;
+		static uint8_t tuningDownCount = 0;
+		static int pct;
+		static bool firstLog = true;
+
+		if (firstLog && state == AT_BOARD)
+		{
+			Serial.println("Cycle\t|Board Sensed\t|Tuning Up\t|Tuning Down\t|Resting Pressure (%)\t|");
+			firstLog = false;
+		}
+		if (state == BOARD_SENSED && state != previousState)
+			boardSensedCount++;
+		if (state == TUNING_DOWN && state != previousState)
+			tuningDownCount++;
+		if (state == TUNING_UP && state != previousState)
+			tuningUpCount++;
+		if (state == AT_BOARD && state != previousState)
+		{
+
+			pct = sensor.GetFsrPct();
+			static char temp[200];
+			sprintf(temp, "%02lu   \t|%02u        \t|%02u       \t|%02u         \t|%03d                  \t|\r\n",
+					cycleCount++, boardSensedCount, tuningUpCount, tuningDownCount, pct);
+			Serial.print(temp);
+			Serial.flush();
+			boardSensedCount = 0;
+			tuningUpCount = 0;
+			tuningDownCount = 0;
+		}
+		
+
+
+	
+	}
+#endif
+
+
 }
 
 bool ActuatorStateMachine::ShouldTransitionOnPress(PressState state)
 {
 	bool retval = false;
 #ifdef DEBUG_MODE
+	retval = (state == SINGLE_PRESS);
+#endif
+#ifdef LOG_MODE
 	retval = (state == SINGLE_PRESS);
 #endif
 	return retval;
@@ -40,8 +88,8 @@ ActuatorStateMachine::ActuatorStateMachine()
 {
 	startPushbutton = FsrPushbutton(A0, 5);
 	stopPushbutton = FsrPushbutton(A1, 5);
-	touchSensor = TouchSensor(A2, 20, 80);
-	actuatorMotorController = MotorController(); // default pins set in constructor 
+	touchSensor = TouchSensor(A2, 20, 23);
+	actuatorMotorController = MotorController(); // default pins set in constructor
 	suctionCup = SuctionCup(8, 9);
 	vacuumPressureSwitch = VacuumPressureSwitch(10);
 	vacuumSolenoid = VacuumSolenoid(14);
@@ -62,7 +110,7 @@ void ActuatorStateMachine::Process()
 	startPushbutton.PollPresses();
 	stopPushbutton.PollPresses();
 	PressState startButtonState = startPushbutton.IsPress();
-	//PressState stopButtonState = stopPushbutton.IsPress();
+	PressState stopButtonState = stopPushbutton.IsPress();
 	previousState = state;
 
 	switch (state)
@@ -89,11 +137,11 @@ void ActuatorStateMachine::Process()
 		actuatorMotorController.MotorDrive(DRIVE_UP_FAST);
 
 		//Transition Conditions
-		if (touchSensor.GetState() == ABOVE_LOWER_THRESHOLD || ShouldTransitionOnPress(startButtonState))
+		if (touchSensor.GetState() == ABOVE_LOWER_THRESHOLD) // || ShouldTransitionOnPress(startButtonState))
 		{
 			state = BOARD_SENSED;
 		}
-		if (touchSensor.GetState() == ABOVE_UPPER_THRESHOLD || ShouldTransitionOnPress(startButtonState))
+		if (touchSensor.GetState() == ABOVE_UPPER_THRESHOLD) // || ShouldTransitionOnPress(startButtonState))
 		{
 			// shouldnt get here but put here for safety
 			state = TUNING_DOWN;
@@ -148,11 +196,28 @@ void ActuatorStateMachine::Process()
 		actuatorMotorController.MotorDrive(MOTOR_STOP);
 		// Transition Condition
 		// ensure that the vacuum pressure switch is off and the motor is stopped
-		if (vacuumPressureSwitch.HasVacuum() == false && actuatorMotorController.GetMotorState() == MOTOR_STOPPED)
+		// if (vacuumPressureSwitch.HasVacuum() == false && actuatorMotorController.GetMotorState() == MOTOR_STOPPED)
+		// {
+		// 	state = RAISING_CUP;
+		// }
+		// if (ShouldTransitionOnPress(startButtonState))
+		// {
+		// 	state = DRIVING_DOWN;
+		// }
+		// if (ShouldTransitionOnPress(stopButtonState))
+		// {
+		// 	state = STOPPED;
+		// }
+		Serial.println(touchSensor.GetFsrPct());
+		static long cnt = 0;
+		if (ShouldTransitionOnPress(startButtonState))
+			state = DRIVING_DOWN;
+		if (cnt++ >= 20)
 		{
-			state = RAISING_CUP;
+			//state = DRIVING_DOWN;
+			
+			cnt = 0;
 		}
-
 		break;
 	case RAISING_CUP:
 		// Action
@@ -178,9 +243,24 @@ void ActuatorStateMachine::Process()
 		// Transition Conditions
 
 		break;
+	case DRIVING_DOWN:
+	{
+		actuatorMotorController.MotorDrive(DRIVE_DOWN_FAST);
+		// if (ShouldTransitionOnPress(stopButtonState))
+		// {
+		// 	state = STOPPED;
+		// }
+		static long cnt2 = 0;
+		if (cnt2++ >= 20)
+		{
+			state = DRIVING_UP;
+			cnt2 = 0;
+		}
+		break;
+	}
 
 	default:
 		break;
 	}
-	PrintStateTransition(state, previousState);
+	PrintStateTransition(state, previousState, touchSensor);
 }

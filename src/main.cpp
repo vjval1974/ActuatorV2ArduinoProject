@@ -74,25 +74,25 @@ void setup()
 
 void loop()
 {
-	//actuatorStateMachine.Process();
+	actuatorStateMachine.Process();
 
 
-	testPushbutton1.PollPresses();
-	testPushbutton2.PollPresses();
+	// testPushbutton1.PollPresses();
+	// testPushbutton2.PollPresses();
 
-	PressState tpb1State = testPushbutton1.IsPress();
-	PressState tpb2State = testPushbutton2.IsPress();
-	if (tpb1State == SINGLE_PRESS)
-		Serial.println("Button 1: SINGLE PRESS: ");
-	if (tpb1State == DOUBLE_PRESS)
-		Serial.println("Button 1: DOUBLE PRESS: ");
+	// PressState tpb1State = testPushbutton1.IsPress();
+	// PressState tpb2State = testPushbutton2.IsPress();
+	// if (tpb1State == SINGLE_PRESS)
+	// 	Serial.println("Button 1: SINGLE PRESS: ");
+	// if (tpb1State == DOUBLE_PRESS)
+	// 	Serial.println("Button 1: DOUBLE PRESS: ");
 
-	if (tpb2State == SINGLE_PRESS)
-		Serial.println("Button 2: SINGLE PRESS: ");
-	if (tpb2State == DOUBLE_PRESS)
-		Serial.println("Button 2: DOUBLE PRESS: ");
+	// if (tpb2State == SINGLE_PRESS)
+	// 	Serial.println("Button 2: SINGLE PRESS: ");
+	// if (tpb2State == DOUBLE_PRESS)
+	// 	Serial.println("Button 2: DOUBLE PRESS: ");
 
 
-	delay(100);
+	delay(20);
 	
 }
