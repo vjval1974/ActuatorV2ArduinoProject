@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+#include "../Data/SavedData.h"
 #include "ActuatorStateMachine.h"
 
 String statesText[11] =
@@ -88,7 +88,7 @@ ActuatorStateMachine::ActuatorStateMachine()
 {
 	startPushbutton = FsrPushbutton(A0, 5);
 	stopPushbutton = FsrPushbutton(A1, 5);
-	touchSensor = TouchSensor(A2, 20, 23);
+	touchSensor = TouchSensor(A2,  SavedData::GetLowerThresholdValue(), SavedData::GetUpperThresholdValue());
 	actuatorMotorController = MotorController(); // default pins set in constructor
 	suctionCup = SuctionCup(8, 9);
 	vacuumPressureSwitch = VacuumPressureSwitch(10);
@@ -110,7 +110,7 @@ void ActuatorStateMachine::Process()
 	startPushbutton.PollPresses();
 	stopPushbutton.PollPresses();
 	PressState startButtonState = startPushbutton.IsPress();
-	PressState stopButtonState = stopPushbutton.IsPress();
+	//PressState stopButtonState = stopPushbutton.IsPress();
 	previousState = state;
 
 	switch (state)
