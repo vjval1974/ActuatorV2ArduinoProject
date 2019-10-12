@@ -22,7 +22,7 @@ FsrState TouchSensor::GetState(void)
     // check analag input value
     // filter
     int fsrValue = GetFsrPct();
-
+    //Serial.println(_upperThresholdPct);
     if (fsrValue <= _lowerThresholdPct)
         return BELOW_LOWER_THRESHOLD;
 

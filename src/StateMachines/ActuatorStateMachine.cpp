@@ -214,7 +214,7 @@ void ActuatorStateMachine::Process()
 			state = RAISING_CUP;
 		if (cnt++ >= 20)
 		{
-			//state = DRIVING_DOWN;
+			state = RAISING_CUP;
 			
 			cnt = 0;
 		}
@@ -230,6 +230,12 @@ void ActuatorStateMachine::Process()
 		// }
 		if (ShouldTransitionOnPress(startButtonState))
 			state = APPLYING_VACUUM;
+			if (cnt++ >= 400)
+		{
+			state = APPLYING_VACUUM;
+			
+			cnt = 0;
+		}
 		break;
 	case APPLYING_VACUUM:
 		// Action
@@ -241,6 +247,12 @@ void ActuatorStateMachine::Process()
 		// }
 		if (ShouldTransitionOnPress(startButtonState))
 			state = IN_POSITION;
+			if (cnt++ >= 400)
+		{
+			state = IN_POSITION;
+			
+			cnt = 0;
+		}	
 		break;
 	case IN_POSITION:
 		// Action
@@ -252,6 +264,7 @@ if (ShouldTransitionOnPress(startButtonState))
 	case DRIVING_DOWN:
 	{
 		actuatorMotorController.MotorDrive(DRIVE_DOWN_FAST);
+		vacuumSolenoid.Command(DEACTIVATE);
 		if (ShouldTransitionOnPress(startButtonState))
 		{
 			state = STOPPED;

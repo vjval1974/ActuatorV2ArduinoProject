@@ -24,7 +24,7 @@ int SavedData::GetLowerThresholdValue()
 int SavedData::GetUpperThresholdValue()
 {
     upperThresholdValue = EEPROM.read(upperThresholdEepromAddress);
-    if (upperThresholdValue <= 0 || lowerThresholdValue >= 75 || upperThresholdValue <= lowerThresholdValue)
+    if (upperThresholdValue <= 0 || upperThresholdValue >= 75 || upperThresholdValue <= lowerThresholdValue)
     {
         upperThresholdValue = upperThresholdHardCodedDefault;
         EEPROM.update(upperThresholdEepromAddress, upperThresholdValue);
