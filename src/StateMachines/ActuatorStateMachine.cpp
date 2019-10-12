@@ -90,9 +90,9 @@ ActuatorStateMachine::ActuatorStateMachine()
 	stopPushbutton = FsrPushbutton(A1, 5);
 	touchSensor = TouchSensor(A2,  SavedData::GetLowerThresholdValue(), SavedData::GetUpperThresholdValue());
 	actuatorMotorController = MotorController(); // default pins set in constructor
-	suctionCup = SuctionCup(8, 9);
+	suctionCup = SuctionCup(9, 14);
 	vacuumPressureSwitch = VacuumPressureSwitch(10);
-	vacuumSolenoid = VacuumSolenoid(14);
+	vacuumSolenoid = VacuumSolenoid(8);
 	state = STOPPED;
 	previousState = STOPPED;
 }
@@ -208,10 +208,10 @@ void ActuatorStateMachine::Process()
 		// {
 		// 	state = STOPPED;
 		// }
-		Serial.println(touchSensor.GetFsrPct());
+		//Serial.println(touchSensor.GetFsrPct());
 		static long cnt = 0;
 		if (ShouldTransitionOnPress(startButtonState))
-			state = DRIVING_DOWN;
+			state = RAISING_CUP;
 		if (cnt++ >= 20)
 		{
 			//state = DRIVING_DOWN;
@@ -222,40 +222,46 @@ void ActuatorStateMachine::Process()
 	case RAISING_CUP:
 		// Action
 		suctionCup.Command(ACTIVATE);
-		// Transition Conditions
-		if (suctionCup.GetPosition() == SUCTION_CUP_RAISED)
-		{
+		// Transition Conditions 
+		// Todo: add some sort of delay here as we dont have position switch
+		// if (suctionCup.GetPosition() == SUCTION_CUP_RAISED)
+		// {
+		// 	state = APPLYING_VACUUM;
+		// }
+		if (ShouldTransitionOnPress(startButtonState))
 			state = APPLYING_VACUUM;
-		}
 		break;
 	case APPLYING_VACUUM:
 		// Action
 		vacuumSolenoid.Command(ACTIVATE);
 		// Transition Conditions
-		if (vacuumPressureSwitch.HasVacuum() == true)
-		{
+		// if (vacuumPressureSwitch.HasVacuum() == true)
+		// {
+		// 	state = IN_POSITION;
+		// }
+		if (ShouldTransitionOnPress(startButtonState))
 			state = IN_POSITION;
-		}
 		break;
 	case IN_POSITION:
 		// Action
 		suctionCup.Command(DEACTIVATE); // so that the board is rested back on the stop
 		// Transition Conditions
-
+if (ShouldTransitionOnPress(startButtonState))
+			state = DRIVING_DOWN;
 		break;
 	case DRIVING_DOWN:
 	{
 		actuatorMotorController.MotorDrive(DRIVE_DOWN_FAST);
-		// if (ShouldTransitionOnPress(stopButtonState))
-		// {
-		// 	state = STOPPED;
-		// }
-		static long cnt2 = 0;
-		if (cnt2++ >= 20)
+		if (ShouldTransitionOnPress(startButtonState))
 		{
-			state = DRIVING_UP;
-			cnt2 = 0;
+			state = STOPPED;
 		}
+		// static long cnt2 = 0;
+		// if (cnt2++ >= 20)
+		// {
+		// 	state = DRIVING_UP;
+		// 	cnt2 = 0;
+		// }
 		break;
 	}
 

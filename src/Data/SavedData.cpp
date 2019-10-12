@@ -3,8 +3,8 @@
 
 const int SavedData::lowerThresholdEepromAddress = 0;
 const int SavedData::upperThresholdEepromAddress = 1;
-const int SavedData::lowerThresholdHardCodedDefault = 15;
-const int SavedData::upperThresholdHardCodedDefault = 25;    
+const int SavedData::lowerThresholdHardCodedDefault = 10;
+const int SavedData::upperThresholdHardCodedDefault = 20;    
 int SavedData::lowerThresholdValue;
 int SavedData::upperThresholdValue;
 

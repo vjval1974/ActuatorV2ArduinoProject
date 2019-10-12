@@ -28,12 +28,14 @@ void SuctionCup::Command(SolenoidCommand command)
     if (command == ACTIVATE)
     {
         // set pin state to Activate
-
+        digitalWrite(_outputPin, HIGH);
         _state = ACTIVATED;
     }
     else
     {
         // set pin state to Deactivate
+        
+        digitalWrite(_outputPin, LOW);
         _state = DEACTICTIVATED;
     }
 }
