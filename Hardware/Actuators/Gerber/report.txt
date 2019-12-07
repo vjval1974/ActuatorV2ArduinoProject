@@ -1,0 +1,6 @@
+Plot file “/home/brad/KiCadProjects/Actuators/Gerber/ActuatorsExpanded-F_Cu.gbr” created.
+Plot file “/home/brad/KiCadProjects/Actuators/Gerber/ActuatorsExpanded-B_Cu.gbr” created.
+Plot file “/home/brad/KiCadProjects/Actuators/Gerber/ActuatorsExpanded-F_SilkS.gbr” created.
+Plot file “/home/brad/KiCadProjects/Actuators/Gerber/ActuatorsExpanded-B_SilkS.gbr” created.
+Plot file “/home/brad/KiCadProjects/Actuators/Gerber/ActuatorsExpanded-Margin.gbr” created.
+Create Gerber job file “/home/brad/KiCadProjects/Actuators/Gerber/ActuatorsExpanded-job.gbrjob”
