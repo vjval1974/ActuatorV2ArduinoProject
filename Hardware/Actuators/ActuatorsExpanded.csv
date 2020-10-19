@@ -1,18 +1,18 @@
-"Id";"Designator";"Package";"Quantity";"Designation";"Supplier and ref";
-1;"J12,J6,J13,J11";"TerminalBlock_Phoenix_MKDS-3-3-5.08_1x03_P5.08mm_Horizontal";4;"Screw_Terminal_01x03";;https://au.rs-online.com/web/p/pcb-terminal-blocks/8020541/;
-2;"J2,J1";"PinSocket_1x12_P2.54mm_Vertical";2;"Conn_01x12";;https://au.rs-online.com/web/p/products/7022814/;
-3;"K3,K2,K4,K1";"Relay_SPDT_Omron-G5LE-1";4;"G5LE-1";;https://au.rs-online.com/web/p/products/3998231/;
-4;"U2";"SOIC-18W_7.5x11.6mm_P1.27mm";1;"ULN2803A";;https://au.rs-online.com/web/p/darlington-pairs/6466311/;
-5;"U1";"SSOP-14_5.3x6.2mm_P0.65mm";1;"74HC14";;https://www.digikey.com.au/product-detail/en/texas-instruments/SN74HC14DBR/296-30037-1-ND/2795682;
-6;"RN2";"R_Array_SIP8";1;"R_Pack04_SIP";;https://www.digikey.com.au/product-detail/en/vishay-dale/CSC08A0310K0GEK/CSC10KQ-ND/2713617;
-7;"RN1";"R_Array_SIP5";1;"R_Network04";;https://www.digikey.com.au/product-detail/en/vishay-dale/CSC05A0110K0GEK/CSC10KC-ND/2713582;
-8;"R7";"R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal";1;"33k";;https://au.rs-online.com/web/p/products/1997664/;
-9;"PS1";"Converter_DCDC_TRACO_TEN32411";1;"TEN32411WIN";;https://au.rs-online.com/web/p/isolated-dc-dc-converters/8019392/;
-10;"J18,J16,J14,J10";"Molex_KK-254_AE-6410-02A_1x02_P2.54mm_Vertical";4;"Conn_01x02_Male";;https://au.rs-online.com/web/p/pcb-headers/4838461/;
-11;"J8";"Molex_KK-254_AE-6410-02A_1x02_P2.54mm_Vertical";1;"Conn_01x02_Female";;https://au.rs-online.com/web/p/crimp-contacts/0467598/ AND https://au.rs-online.com/web/p/wire-housings-plugs/6795363/;
-12;"J4";"PinHeader_1x08_P2.54mm_Vertical";1;"Conn_01x08_MountingPin";;https://au.rs-online.com/web/p/pcb-headers/2518317/;
-13;"J3";"TerminalBlock_Phoenix_MKDS-3-2-5.08_1x02_P5.08mm_Horizontal";1;"Screw_Terminal_01x02";;https://au.rs-online.com/web/p/pcb-terminal-blocks/1930564/;
-14;"F1";"Fuseholder_Cylinder-6.3x32mm_Schurter_0031-8002_Horizontal_Open";1;"5A";;https://www.digikey.com.au/products/en?KeyWords=0031.8002&WT.z_header=search_go&v=486;
-15;"D3";"D_DO-201AD_P15.24mm_Horizontal";1;"1N5401";;https://au.rs-online.com/web/p/rectifier-diodes-schottky-diodes/6289451/;
-16;"D2";"SOT-353_SC-70-5";1;"MMBD4448HCQW";;https://www.digikey.com.au/product-detail/en/diodes-incorporated/MMBD4448HCQW-7-F/MMBD4448HCQW-FDICT-ND/806874;
-17;"C4,C3,C2,C1";"C_0805_2012Metric";4;"0.1uF";;https://au.rs-online.com/web/p/products/6480941/;
+Id,Designator,Package,Quantity,Designation,Supplier and ref
+1,"J12,J6,J13,J11",TerminalBlock_Phoenix_MKDS-3-3-5.08_1x03_P5.08mm_Horizontal,4,Screw_Terminal_01x03,https://au.rs-online.com/web/p/pcb-terminal-blocks/8020541/
+2,"J2,J1",PinSocket_1x12_P2.54mm_Vertical,2,Conn_01x12,https://au.rs-online.com/web/p/products/7022814/
+3,"K3,K2,K4,K1",Relay_SPDT_Omron-G5LE-1,4,G5LE-1,https://au.rs-online.com/web/p/products/3998231/
+4,U2,SOIC-18W_7.5x11.6mm_P1.27mm,1,ULN2803A,https://au.rs-online.com/web/p/darlington-pairs/6466311/
+5,U1,SSOP-14_5.3x6.2mm_P0.65mm,1,74HC14,https://www.digikey.com.au/product-detail/en/texas-instruments/SN74HC14DBR/296-30037-1-ND/2795682
+6,RN2,R_Array_SIP8,1,R_Pack04_SIP,https://www.digikey.com.au/product-detail/en/vishay-dale/CSC08A0310K0GEK/CSC10KQ-ND/2713617
+7,RN1,R_Array_SIP5,1,R_Network04,https://www.digikey.com.au/product-detail/en/vishay-dale/CSC05A0110K0GEK/CSC10KC-ND/2713582
+8,R7,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,1,33k,https://au.rs-online.com/web/p/products/1997664/
+9,PS1,Converter_DCDC_TRACO_TEN32411,1,TEN32411WIN,https://au.rs-online.com/web/p/isolated-dc-dc-converters/8019392/
+10,"J18,J16,J14,J10",Molex_KK-254_AE-6410-02A_1x02_P2.54mm_Vertical,4,Conn_01x02_Male,https://au.rs-online.com/web/p/pcb-headers/4838461/
+11,J8,Molex_KK-254_AE-6410-02A_1x02_P2.54mm_Vertical,1,Conn_01x02_Female,https://au.rs-online.com/web/p/crimp-contacts/0467598/ AND https://au.rs-online.com/web/p/wire-housings-plugs/6795363/
+12,J4,PinHeader_1x08_P2.54mm_Vertical,1,Conn_01x08_MountingPin,https://au.rs-online.com/web/p/pcb-headers/2518317/
+13,J3,TerminalBlock_Phoenix_MKDS-3-2-5.08_1x02_P5.08mm_Horizontal,1,Screw_Terminal_01x02,https://au.rs-online.com/web/p/pcb-terminal-blocks/1930564/
+14,F1,Fuseholder_Cylinder-6.3x32mm_Schurter_0031-8002_Horizontal_Open,1,5A,https://www.digikey.com.au/products/en?KeyWords=0031.8002&WT.z_header=search_go&v=486
+15,D3,D_DO-201AD_P15.24mm_Horizontal,1,1N5401,https://au.rs-online.com/web/p/rectifier-diodes-schottky-diodes/6289451/
+16,D2,SOT-353_SC-70-5,1,MMBD4448HCQW,https://www.digikey.com.au/product-detail/en/diodes-incorporated/MMBD4448HCQW-7-F/MMBD4448HCQW-FDICT-ND/806874
+17,"C4,C3,C2,C1",C_0805_2012Metric,4,0.1uF,https://au.rs-online.com/web/p/products/6480941/
