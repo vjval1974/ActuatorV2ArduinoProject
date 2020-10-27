@@ -14,5 +14,5 @@ Id,Designator,Package,Quantity,Designation,Supplier and ref
 13,J3,TerminalBlock_Phoenix_MKDS-3-2-5.08_1x02_P5.08mm_Horizontal,1,Screw_Terminal_01x02,https://au.rs-online.com/web/p/pcb-terminal-blocks/1930564/
 14,F1,Fuseholder_Cylinder-6.3x32mm_Schurter_0031-8002_Horizontal_Open,1,5A,https://www.digikey.com.au/products/en?KeyWords=0031.8002&WT.z_header=search_go&v=486
 15,D3,D_DO-201AD_P15.24mm_Horizontal,1,1N5401,https://au.rs-online.com/web/p/rectifier-diodes-schottky-diodes/6289451/
-16,D2,SOT-353_SC-70-5,1,MMBD4448HCQW,https://www.digikey.com.au/product-detail/en/diodes-incorporated/MMBD4448HCQW-7-F/MMBD4448HCQW-FDICT-ND/806874
+16,D2,SOT-353_SC-70-5,1,MMBD4448HCQW,https://au.element14.com/rohm/umn1nfhtr/diode-aec-q101-0-25a-80v-sot-353/dp/2772407
 17,"C4,C3,C2,C1",C_0805_2012Metric,4,0.1uF,https://au.rs-online.com/web/p/products/6480941/
