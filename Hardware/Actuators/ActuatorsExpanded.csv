@@ -12,7 +12,7 @@ Id,Designator,Package,Quantity,Designation,Supplier and ref
 11,J8,Molex_KK-254_AE-6410-02A_1x02_P2.54mm_Vertical,1,Conn_01x02_Female,https://au.rs-online.com/web/p/crimp-contacts/0467598/ AND https://au.rs-online.com/web/p/wire-housings-plugs/6795363/
 12,J4,PinHeader_1x08_P2.54mm_Vertical,1,Conn_01x08_MountingPin,https://au.rs-online.com/web/p/pcb-headers/2518317/
 13,J3,TerminalBlock_Phoenix_MKDS-3-2-5.08_1x02_P5.08mm_Horizontal,1,Screw_Terminal_01x02,https://au.rs-online.com/web/p/pcb-terminal-blocks/1930564/
-14,F1,Fuseholder_Cylinder-6.3x32mm_Schurter_0031-8002_Horizontal_Open,1,5A,https://www.digikey.com.au/products/en?KeyWords=0031.8002&WT.z_header=search_go&v=486
+14,F1,Fuseholder_Cylinder-6.3x32mm_Schurter_0031-8002_Horizontal_Open,1,5A,https://au.element14.com/schurter/0031-8002/fuse-holder-32x6mm/dp/1214784?autoc=schurter+0031.8002&ost=shurter+0031.8002&cfm=true
 15,D3,D_DO-201AD_P15.24mm_Horizontal,1,1N5401,https://au.rs-online.com/web/p/rectifier-diodes-schottky-diodes/6289451/
 16,D2,SOT-353_SC-70-5,1,MMBD4448HCQW,https://au.element14.com/rohm/umn1nfhtr/diode-aec-q101-0-25a-80v-sot-353/dp/2772407
 17,"C4,C3,C2,C1",C_0805_2012Metric,4,0.1uF,https://au.rs-online.com/web/p/products/6480941/
