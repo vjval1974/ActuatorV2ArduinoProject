@@ -3,9 +3,9 @@ Id,Designator,Package,Quantity,Designation,Supplier and ref
 2,"J2,J1",PinSocket_1x12_P2.54mm_Vertical,2,Conn_01x12,https://au.rs-online.com/web/p/products/7022814/
 3,"K3,K2,K4,K1",Relay_SPDT_Omron-G5LE-1,4,G5LE-1,https://au.rs-online.com/web/p/products/3998231/
 4,U2,SOIC-18W_7.5x11.6mm_P1.27mm,1,ULN2803A,https://au.rs-online.com/web/p/darlington-pairs/6466311/
-5,U1,SSOP-14_5.3x6.2mm_P0.65mm,1,74HC14,https://www.digikey.com.au/product-detail/en/texas-instruments/SN74HC14DBR/296-30037-1-ND/2795682
+5,U1,SSOP-14_5.3x6.2mm_P0.65mm,1,74HC14,https://au.element14.com/nexperia/74hc14db-118/schmitt-trigger-inverter-1i-p/dp/3441801?ost=74hc14+ssop
 6,RN2,R_Array_SIP8,1,R_Pack04_SIP,https://www.digikey.com.au/product-detail/en/vishay-dale/CSC08A0310K0GEK/CSC10KQ-ND/2713617
-7,RN1,R_Array_SIP5,1,R_Network04,https://www.digikey.com.au/product-detail/en/vishay-dale/CSC05A0110K0GEK/CSC10KC-ND/2713582
+7,RN1,R_Array_SIP5,1,R_Network04,https://au.element14.com/bourns/4605x-101-103lf/resistor-network-5-pin-10k-2/dp/9356061?ost=csc05a0110k0gek&iscrfnonsku=true
 8,R7,R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,1,33k,https://au.rs-online.com/web/p/products/1997664/
 9,PS1,Converter_DCDC_TRACO_TEN32411,1,TEN32411WIN,https://au.rs-online.com/web/p/isolated-dc-dc-converters/8019392/
 10,"J18,J16,J14,J10",Molex_KK-254_AE-6410-02A_1x02_P2.54mm_Vertical,4,Conn_01x02_Male,https://au.rs-online.com/web/p/pcb-headers/4838461/
