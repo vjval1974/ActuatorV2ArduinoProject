@@ -1,11 +1,11 @@
 #ifndef SOLENOIDCOMMAND_H
-#define SOLENIODCOMMAND_H
+#define SOLENOIDCOMMAND_H
 
-typedef enum {
-    ACTIVATE, 
+#include <stdint.h>
+
+enum class SolenoidCommand : uint8_t {
+    ACTIVATE,
     DEACTIVATE
-} SolenoidCommand;
-
-
+};
 
 #endif

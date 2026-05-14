@@ -9,33 +9,28 @@ SuctionCup::SuctionCup(int outputPin, int positionInputPin)
     pinMode(_positionInputPin, INPUT_PULLUP);
 }
 
-SuctionCupPosition SuctionCup::GetPosition()
+SuctionCupPosition SuctionCup::GetPosition() const
 {
     return digitalRead(_positionInputPin) == HIGH
-               ? SUCTION_CUP_RAISED
-               : SUCTION_CUP_LOWERED;
+               ? SuctionCupPosition::SUCTION_CUP_RAISED
+               : SuctionCupPosition::SUCTION_CUP_LOWERED;
 }
 
-
-
-SolenoidState SuctionCup::GetState()
+SolenoidState SuctionCup::GetState() const
 {
     return _state;
 }
 
 void SuctionCup::Command(SolenoidCommand command)
 {
-    if (command == ACTIVATE)
+    if (command == SolenoidCommand::ACTIVATE)
     {
-        // set pin state to Activate
         digitalWrite(_outputPin, HIGH);
-        _state = ACTIVATED;
+        _state = SolenoidState::ACTIVATED;
     }
     else
     {
-        // set pin state to Deactivate
-        
         digitalWrite(_outputPin, LOW);
-        _state = DEACTICTIVATED;
+        _state = SolenoidState::DEACTIVATED;
     }
 }

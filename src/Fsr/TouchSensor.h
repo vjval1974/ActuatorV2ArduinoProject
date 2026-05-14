@@ -6,15 +6,16 @@
 class TouchSensor
 {
 private:
-    
     int _inputPin;
     int _lowerThresholdPct;
     int _upperThresholdPct;
 
 public:
     TouchSensor(int inputPin, int lowerThresholdPct, int upperThresholdPct);
-    FsrState GetState(void);
-    int GetFsrPct();
+    TouchSensor(const TouchSensor&) = delete;
+    TouchSensor& operator=(const TouchSensor&) = delete;
+    FsrState GetState() const;
+    int GetFsrPct() const;
 };
 
 #endif

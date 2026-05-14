@@ -1,6 +1,9 @@
 #ifndef VACUUMSOLENOID_H
 #define VACUUMSOLENOID_H
 
+#include "SolenoidState.h"
+#include "SolenoidCommand.h"
+
 class VacuumSolenoid
 {
 private:
@@ -8,11 +11,10 @@ private:
 
 public:
     VacuumSolenoid(int outputPin);
-    SolenoidState GetState();
+    VacuumSolenoid(const VacuumSolenoid&) = delete;
+    VacuumSolenoid& operator=(const VacuumSolenoid&) = delete;
+    SolenoidState GetState() const;
     void Command(SolenoidCommand command);
 };
-
-// SolenoidState GetVacuumSolenoidState();
-// void VacuumSolenoid(SolenoidCommand command);
 
 #endif

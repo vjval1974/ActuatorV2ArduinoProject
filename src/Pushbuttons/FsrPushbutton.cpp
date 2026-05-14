@@ -3,7 +3,7 @@
 #include "FsrPushbutton.h"
 #include "../Helpers/ArrayHelper.h"
 
-static bool HasExceededThresholdInLastNCounts(uint8_t *array, uint8_t len, uint8_t thresh);
+static bool HasExceededThresholdInLastNCounts(const uint8_t *array, uint8_t len, uint8_t thresh);
 
 FsrPushbutton::FsrPushbutton(int analogInput, uint8_t numSpacesForTimeout)
 {
@@ -14,13 +14,13 @@ FsrPushbutton::FsrPushbutton(int analogInput, uint8_t numSpacesForTimeout)
     _hasTwoReleases = false;
     pinMode(analogInput, INPUT);
 
-    ArrayHelper::ClearArray(valueArray, ARRAY_LENGTH);
+    ArrayHelper::ClearArray(valueArray, kArrayLength);
 }
 
 void FsrPushbutton::PollPresses()
 {
     // shift array right then save new value
-    for (int i = ARRAY_LENGTH - 1; i > 0; i--)
+    for (int i = kArrayLength - 1; i > 0; i--)
     {
         valueArray[i] = valueArray[i - 1];
     }
@@ -30,7 +30,7 @@ void FsrPushbutton::PollPresses()
 
 PressState FsrPushbutton::IsPress()
 {
-    PressState retval = NOT_PRESSED;
+    PressState retval = PressState::NOT_PRESSED;
     bool isRelease = IsRelease();
     if (!_hasOneRelease)
     {
@@ -47,7 +47,7 @@ PressState FsrPushbutton::IsPress()
         }
         if (_oneReleaseCount > _numSpacesForTimeout)
         {
-            retval = _hasTwoReleases ? DOUBLE_PRESS : SINGLE_PRESS;
+            retval = _hasTwoReleases ? PressState::DOUBLE_PRESS : PressState::SINGLE_PRESS;
             _hasOneRelease = false;
             _hasTwoReleases = false;
             _oneReleaseCount = 0;
@@ -57,23 +57,21 @@ PressState FsrPushbutton::IsPress()
     return retval;
 }
 
-bool FsrPushbutton::IsDownPress()
+bool FsrPushbutton::IsDownPress() const
 {
     return (valueArray[0] > (uint8_t)0 && valueArray[1] == 0);
 }
 
-bool FsrPushbutton::IsRelease()
+bool FsrPushbutton::IsRelease() const
 {
     // we want to find when we have a zero reading and previous readings are above
     // a set threshold. This is to reduce false readings (blips).
-    return (valueArray[1] > (uint8_t)0 && valueArray[0] == 0 && HasExceededThresholdInLastNCounts(valueArray, 5, 10));
+    return (valueArray[1] > (uint8_t)0 && valueArray[0] == 0 &&
+            HasExceededThresholdInLastNCounts(valueArray, kPressDetectionWindow, kPressDetectionThreshold));
 }
 
-static bool HasExceededThresholdInLastNCounts(uint8_t *array, uint8_t len, uint8_t thresh)
+static bool HasExceededThresholdInLastNCounts(const uint8_t *array, uint8_t len, uint8_t thresh)
 {
-// #ifdef DEBUG_MODE
-//     ArrayHelper::PrintArray(array, len);
-// #endif
     for (int ii = 0; ii < len; ii++)
     {
         if (array[ii] > thresh)

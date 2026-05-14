@@ -14,12 +14,11 @@ private:
 
 public:
     SuctionCup(int outputPin, int positionInputPin);
-    SuctionCupPosition GetPosition();
-    SolenoidState GetState();
+    SuctionCup(const SuctionCup&) = delete;
+    SuctionCup& operator=(const SuctionCup&) = delete;
+    SuctionCupPosition GetPosition() const;
+    SolenoidState GetState() const;
     void Command(SolenoidCommand command);
 };
-
-// SolenoidState GetSuctionCupSolenoidState();
-// void SuctionCupSolenoid(SolenoidCommand command);
 
 #endif

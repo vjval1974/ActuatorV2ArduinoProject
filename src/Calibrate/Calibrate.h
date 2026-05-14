@@ -5,9 +5,8 @@
 #include "../Motor/Motor.h"
 #include "../Fsr/TouchSensor.h"
 
-typedef enum
+enum class CalibrationState : uint8_t
 {
-
     STOPPED,
     DRIVE_DOWN_FAST,
     DRIVING_DOWN_FAST,
@@ -19,22 +18,26 @@ typedef enum
     SENSOR_READINGS_STABLE,
     TUNING_COMPLETE,
     STORING_VALUES
-
-} CalibrationState;
+};
 
 class Calibrate
 {
 private:
-    const int _defaultLowerThreshold = 15;
-    const int _defaultUpperThreshold = 25;
+    static constexpr uint8_t kDefaultLowerThreshold = 15;
+    static constexpr uint8_t kDefaultUpperThreshold = 25;
+
     CalibrationState state;
     CalibrationState previousState;
-    FsrPushbutton startPushbutton = FsrPushbutton(A0, 5);
-	FsrPushbutton stopPushbutton = FsrPushbutton(A1, 5);
-	TouchSensor touchSensor = TouchSensor(A2, 20, 80);
-	MotorController actuatorMotorController = MotorController(PIN1, PIN2, PIN3, PIN4, PIN5);
-	
+    MotorController& _motor;
+    TouchSensor& _touchSensor;
+    FsrPushbutton& _startPushbutton;
+    FsrPushbutton& _stopPushbutton;
+
 public:
+    Calibrate(MotorController& motor,
+              TouchSensor& touchSensor,
+              FsrPushbutton& startPushbutton,
+              FsrPushbutton& stopPushbutton);
     void Go();
 };
 

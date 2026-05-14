@@ -1,10 +1,11 @@
 #ifndef SUCTIONCUPPOSITION_H
 #define SUCTIONCUPPOSITION_H
 
-typedef enum
-{
+#include <stdint.h>
+
+enum class SuctionCupPosition : uint8_t {
     SUCTION_CUP_RAISED,
     SUCTION_CUP_LOWERED
-} SuctionCupPosition;
+};
 
 #endif

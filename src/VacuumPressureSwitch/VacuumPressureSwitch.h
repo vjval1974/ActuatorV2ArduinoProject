@@ -3,16 +3,16 @@
 
 #include "PressureSwitchState.h"
 
-class VacuumPressureSwitch 
+class VacuumPressureSwitch
 {
-    private:
+private:
     int _inputPin;
 
-    public: 
+public:
     VacuumPressureSwitch(int inputPin);
-    bool HasVacuum();
-
+    VacuumPressureSwitch(const VacuumPressureSwitch&) = delete;
+    VacuumPressureSwitch& operator=(const VacuumPressureSwitch&) = delete;
+    bool HasVacuum() const;
 };
-//PressureSwitchState GetVacuumPressureSwitchState();
 
 #endif

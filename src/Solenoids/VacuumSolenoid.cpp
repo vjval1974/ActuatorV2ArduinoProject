@@ -9,23 +9,19 @@ VacuumSolenoid::VacuumSolenoid(int outputPin)
     pinMode(outputPin, OUTPUT);
 }
 
-SolenoidState VacuumSolenoid::GetState()
+SolenoidState VacuumSolenoid::GetState() const
 {
-    return digitalRead(_outputPin) == HIGH ? ACTIVATED : DEACTICTIVATED;
+    return digitalRead(_outputPin) == HIGH ? SolenoidState::ACTIVATED : SolenoidState::DEACTIVATED;
 }
 
 void VacuumSolenoid::Command(SolenoidCommand command)
 {
-    if (command == ACTIVATE)
+    if (command == SolenoidCommand::ACTIVATE)
     {
         digitalWrite(_outputPin, LOW);
-        // set pin state to Activate
-    
     }
     else
     {
-       digitalWrite(_outputPin, HIGH);
-        // set pin state to Deactivate
-    
+        digitalWrite(_outputPin, HIGH);
     }
 }

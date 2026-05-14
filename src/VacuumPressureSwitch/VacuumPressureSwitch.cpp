@@ -9,7 +9,7 @@ VacuumPressureSwitch::VacuumPressureSwitch(int inputPin)
     pinMode(_inputPin, INPUT_PULLUP);
 }
 
-bool VacuumPressureSwitch::HasVacuum()
+bool VacuumPressureSwitch::HasVacuum() const
 {
     return digitalRead(_inputPin) == HIGH;
 }
