@@ -22,14 +22,20 @@ MotorController::MotorController(int fwPin, int bwPin, int stopPin, int speed2Pi
     pinMode(_faultPin, INPUT_PULLUP);
 }
 
-// default constructor — BROKEN delegation (see CLAUDE.md "Known bugs").
-// Calls MotorController(2,3,4,5,6) as a plain expression, constructing a
-// discarded temporary; pinMode() never fires on the motor pins. Preserved
-// as-is to keep hardware behaviour unchanged.
+// default constructor — BROKEN delegation on the AVR build (see CLAUDE.md
+// "Known bugs"): calls MotorController(2,3,4,5,6) as a plain expression,
+// constructing a discarded temporary; pinMode() never fires on the motor
+// pins. Preserved as-is to keep hardware behaviour unchanged. The native
+// simulator build defines SIM_BUILD to take the fixed C++11 delegation
+// path so the simulator can actually drive the motor.
+#ifdef SIM_BUILD
+MotorController::MotorController() : MotorController(2, 3, 4, 5, 6) {}
+#else
 MotorController::MotorController()
 {
     MotorController(2, 3, 4, 5, 6);
 }
+#endif
 
 MotorState MotorController::GetMotorState() const
 {

@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Actuator Simulator</title>
+<style>
+  :root {
+    --bg: #1a1d23;
+    --panel: #232831;
+    --panel-2: #2a3140;
+    --ink: #e6e8ec;
+    --dim: #8b94a3;
+    --accent: #4cc3ff;
+    --good: #5ad17a;
+    --warn: #ffb454;
+    --bad: #ff6b6b;
+    --board: #c9a26a;
+    --arm: #6b7c93;
+    --cup: #c25450;
+    --vacuum: #4cc3ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 20px;
+    background: var(--bg); color: var(--ink);
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    font-size: 14px;
+  }
+  h1 { margin: 0 0 14px; font-weight: 500; font-size: 18px; letter-spacing: 0.5px; }
+  .controls {
+    display: flex; gap: 10px; margin-bottom: 16px; align-items: center;
+  }
+  button {
+    background: var(--panel-2); color: var(--ink); border: 1px solid #3a4254;
+    border-radius: 6px; padding: 8px 16px; font-size: 14px; cursor: pointer;
+    font-family: inherit;
+  }
+  button:hover { background: #344057; }
+  button.primary { background: #2a6f9c; border-color: #3a8fc4; }
+  button.primary:hover { background: #3380b2; }
+  button.danger { background: #6f3030; border-color: #a04848; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 360px 1fr 320px;
+    gap: 16px;
+  }
+  .panel {
+    background: var(--panel); border-radius: 10px; padding: 14px;
+    border: 1px solid #2c333f;
+  }
+  .panel h2 {
+    margin: 0 0 10px; font-size: 12px; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase; color: var(--dim);
+  }
+  .state-box {
+    background: var(--panel-2); border: 1px solid #353c4a;
+    border-radius: 6px; padding: 8px 12px; margin: 4px 0;
+    transition: background 200ms, border-color 200ms;
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 13px;
+  }
+  .state-box.active {
+    background: linear-gradient(90deg, #2a6f9c 0%, #2a4863 100%);
+    border-color: var(--accent);
+    box-shadow: 0 0 12px rgba(76, 195, 255, 0.4);
+    color: #fff;
+  }
+  .state-arrow { color: var(--dim); margin: 2px 16px; font-size: 11px; }
+
+  .readout-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0; border-bottom: 1px solid #2c333f;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px;
+  }
+  .readout-row:last-child { border-bottom: 0; }
+  .readout-row .label { color: var(--dim); }
+  .readout-row .value { font-weight: 500; }
+  .bar {
+    height: 8px; background: #1a1d23; border-radius: 4px; overflow: hidden;
+    margin-top: 2px; width: 120px;
+  }
+  .bar-fill { height: 100%; background: var(--accent); transition: width 80ms; }
+  .bar-fill.fsr { background: var(--warn); }
+  .bar-fill.vacuum { background: var(--vacuum); }
+  .pill {
+    padding: 2px 8px; border-radius: 10px; font-size: 11px;
+    background: #1a1d23; color: var(--dim); display: inline-block;
+  }
+  .pill.on { background: var(--good); color: #1a1d23; }
+  .pill.off { background: #3a3a3a; color: var(--dim); }
+
+  .stage {
+    background: var(--panel); border-radius: 10px; padding: 14px;
+    border: 1px solid #2c333f; min-height: 460px; position: relative;
+  }
+  .stage svg { width: 100%; height: 480px; display: block; }
+
+  #log {
+    margin-top: 16px; background: #14171c; border: 1px solid #2c333f;
+    border-radius: 8px; padding: 10px;
+    height: 140px; overflow-y: auto;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 12px; color: #b5bcc8; white-space: pre-wrap;
+  }
+  .legend { display: flex; gap: 12px; margin-top: 8px; font-size: 11px; color: var(--dim); }
+  .legend span { display: inline-flex; align-items: center; gap: 4px; }
+  .swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .connection-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--bad);
+    display: inline-block; margin-left: auto;
+  }
+  .connection-dot.live { background: var(--good); }
+</style>
+</head>
+<body>
+
+<h1>Actuator Simulator <span id="conn" class="connection-dot"></span></h1>
+
+<div class="controls">
+  <button class="primary" id="btn-start">Start press</button>
+  <button id="btn-stop">Stop press</button>
+  <button class="danger" id="btn-reset">Reset</button>
+  <span style="color: var(--dim); margin-left: 12px;">
+    State machine ticks every 20 ms. Press <strong>Start</strong> to begin the cycle.
+  </span>
+</div>
+
+<div class="grid">
+
+  <div class="panel">
+    <h2>State machine</h2>
+    <div id="states"></div>
+  </div>
+
+  <div class="stage">
+    <h2 style="margin: 0 0 4px; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--dim);">Mechanical view</h2>
+    <svg viewBox="0 0 360 480" preserveAspectRatio="xMidYMid meet">
+      <!-- Surfboard (fixed at top) -->
+      <g id="board">
+        <ellipse cx="180" cy="92" rx="170" ry="14" fill="#a07c47" />
+        <ellipse cx="180" cy="88" rx="170" ry="14" fill="var(--board)" />
+        <text x="180" y="68" text-anchor="middle" fill="var(--dim)" font-size="10" letter-spacing="2">SURFBOARD BLANK</text>
+      </g>
+
+      <!-- Actuator base (fixed at bottom) -->
+      <g id="base">
+        <rect x="120" y="430" width="120" height="40" rx="3" fill="#3a4254" />
+        <rect x="135" y="438" width="90" height="6" fill="#1a1d23" />
+        <text x="180" y="462" text-anchor="middle" fill="var(--dim)" font-size="9" letter-spacing="2">ACTUATOR BASE</text>
+      </g>
+
+      <!-- Arm + cup (animated by JS) -->
+      <g id="arm-group">
+        <!-- arm vertical -->
+        <rect id="arm-shaft" x="170" y="200" width="20" height="230" fill="var(--arm)" stroke="#2a3140" stroke-width="1" />
+        <!-- arm head plate -->
+        <rect id="arm-head" x="155" y="195" width="50" height="10" fill="#8a9bb0" />
+        <!-- FSR indicator (color-coded by pressure) -->
+        <circle id="fsr-dot" cx="180" cy="190" r="6" fill="#444" stroke="#222" stroke-width="1" />
+        <!-- Suction cup -->
+        <g id="cup-group">
+          <ellipse id="cup" cx="180" cy="180" rx="22" ry="7" fill="var(--cup)" />
+          <rect id="cup-stem" x="177" y="180" width="6" height="10" fill="#8a3a36" />
+        </g>
+        <!-- Vacuum aura (shown when hasVacuum) -->
+        <ellipse id="vacuum-aura" cx="180" cy="92" rx="34" ry="14" fill="none"
+                 stroke="var(--vacuum)" stroke-width="2" stroke-dasharray="3 3" opacity="0" />
+      </g>
+
+      <!-- State label overlay -->
+      <text id="state-label" x="180" y="30" text-anchor="middle" fill="var(--accent)"
+            font-family="ui-monospace, monospace" font-size="14" font-weight="600">STOPPED</text>
+      <text id="motor-label" x="180" y="48" text-anchor="middle" fill="var(--dim)"
+            font-family="ui-monospace, monospace" font-size="11">motor: STOPPED</text>
+    </svg>
+    <div class="legend">
+      <span><span class="swatch" style="background: var(--arm);"></span> Arm</span>
+      <span><span class="swatch" style="background: var(--cup);"></span> Suction cup</span>
+      <span><span class="swatch" style="background: var(--board);"></span> Surfboard</span>
+      <span><span class="swatch" style="background: var(--vacuum);"></span> Vacuum seal</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Live readouts</h2>
+    <div class="readout-row"><span class="label">State</span><span class="value" id="r-state">STOPPED</span></div>
+    <div class="readout-row"><span class="label">Motor</span><span class="value" id="r-motor">STOPPED</span></div>
+    <div class="readout-row">
+      <span class="label">Arm position</span><span class="value" id="r-arm">0.0 / 50.0</span>
+    </div>
+    <div class="readout-row">
+      <span class="label">FSR (touch)</span>
+      <span class="value"><span id="r-fsr">0%</span>
+        <div class="bar"><div class="bar-fill fsr" id="bar-fsr" style="width:0%"></div></div>
+      </span>
+    </div>
+    <div class="readout-row">
+      <span class="label">Suction cup</span>
+      <span class="value">
+        <span id="pill-cup-sol" class="pill off">SOLENOID OFF</span>
+        <span id="pill-cup-pos" class="pill off">LOWERED</span>
+      </span>
+    </div>
+    <div class="readout-row">
+      <span class="label">Cup deployment</span>
+      <span class="value"><span id="r-cup">0%</span>
+        <div class="bar"><div class="bar-fill" id="bar-cup" style="width:0%"></div></div>
+      </span>
+    </div>
+    <div class="readout-row">
+      <span class="label">Vacuum solenoid</span>
+      <span class="value"><span id="pill-vac-sol" class="pill off">OFF</span></span>
+    </div>
+    <div class="readout-row">
+      <span class="label">Vacuum level</span>
+      <span class="value"><span id="r-vac">0%</span>
+        <div class="bar"><div class="bar-fill vacuum" id="bar-vac" style="width:0%"></div></div>
+      </span>
+    </div>
+    <div class="readout-row">
+      <span class="label">Pressure switch</span>
+      <span class="value"><span id="pill-vac-sw" class="pill off">NO VACUUM</span></span>
+    </div>
+  </div>
+
+</div>
+
+<div id="log" aria-live="polite"></div>
+
+<script>
+const STATES = [
+  "STOPPED",
+  "DRIVING_UP",
+  "BOARD_SENSED",
+  "TUNING_DOWN",
+  "TUNING_UP",
+  "AT_BOARD",
+  "RAISING_CUP",
+  "APPLYING_VACUUM",
+  "IN_POSITION",
+  "DRIVING_DOWN",
+  "ERROR",
+];
+
+// Render the state list once.
+const stateContainer = document.getElementById("states");
+const stateNodes = {};
+STATES.forEach((name, i) => {
+  const box = document.createElement("div");
+  box.className = "state-box";
+  box.id = "state-" + name;
+  box.textContent = name;
+  stateContainer.appendChild(box);
+  stateNodes[name] = box;
+});
+
+let lastState = null;
+const logEl = document.getElementById("log");
+function appendLog(text) {
+  if (!text) return;
+  // Trim whitespace/newlines but preserve internal lines.
+  text = text.replace(/^\s+|\s+$/g, "");
+  if (!text) return;
+  logEl.textContent += text + "\n";
+  // Cap log to ~200 lines.
+  const lines = logEl.textContent.split("\n");
+  if (lines.length > 200) {
+    logEl.textContent = lines.slice(lines.length - 200).join("\n");
+  }
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+// Visualisation update.
+const armShaft = document.getElementById("arm-shaft");
+const armHead = document.getElementById("arm-head");
+const cupGroup = document.getElementById("cup-group");
+const cupEl = document.getElementById("cup");
+const cupStem = document.getElementById("cup-stem");
+const fsrDot = document.getElementById("fsr-dot");
+const vacuumAura = document.getElementById("vacuum-aura");
+const stateLabel = document.getElementById("state-label");
+const motorLabel = document.getElementById("motor-label");
+
+function fsrColor(pct) {
+  // 0% green, 15% (target band) cyan, 30%+ red
+  if (pct < 8) return "#555";
+  if (pct < 18) return "#5ad17a";
+  if (pct < 25) return "#4cc3ff";
+  return "#ff6b6b";
+}
+
+function applyState(d) {
+  // d.arm in physics units (0..65), board at 50. Map to SVG Y:
+  //   arm = 0   -> shaft top at y=430 (arm fully retracted)
+  //   arm = 50  -> shaft top at y=200 (arm just touching board)
+  //   arm = 65  -> shaft top at y=130 (overpressed)
+  // SVG y grows downward, so larger arm => smaller y.
+  const armPos = Math.max(0, Math.min(65, d.arm));
+  const yBase = 430;
+  const yPerUnit = (430 - 130) / 65;
+  const shaftTop = yBase - armPos * yPerUnit;
+
+  armShaft.setAttribute("y", shaftTop);
+  armShaft.setAttribute("height", (yBase - shaftTop).toString());
+  armHead.setAttribute("y", (shaftTop - 5).toString());
+  fsrDot.setAttribute("cy", (shaftTop - 10).toString());
+  fsrDot.setAttribute("fill", fsrColor(d.fsr));
+
+  // Cup: when not deployed, sits on top of arm head. When deployed (0..100%),
+  // travels up toward the board (which sits at y~85).
+  const cupBaseY = shaftTop - 15;           // resting on the arm
+  const cupBoardY = 85;                     // sealed against board
+  const cupY = cupBaseY + (cupBoardY - cupBaseY) * (d.cup / 100);
+  cupEl.setAttribute("cy", cupY);
+  cupStem.setAttribute("y", cupY);
+  cupStem.setAttribute("height", Math.max(0, cupBaseY - cupY + 5).toString());
+
+  // Vacuum aura visibility.
+  vacuumAura.setAttribute("opacity", d.hasVacuum ? "0.9" : "0");
+  if (d.hasVacuum) {
+    vacuumAura.setAttribute("rx", (34 + (d.vacuum - 60) * 0.1).toString());
+  }
+
+  stateLabel.textContent = d.state;
+  motorLabel.textContent = "motor: " + d.motor;
+
+  // Update state list highlight.
+  if (lastState !== d.state) {
+    if (lastState && stateNodes[lastState]) {
+      stateNodes[lastState].classList.remove("active");
+    }
+    if (stateNodes[d.state]) {
+      stateNodes[d.state].classList.add("active");
+      stateNodes[d.state].scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+    lastState = d.state;
+  }
+
+  // Readouts.
+  document.getElementById("r-state").textContent = d.state;
+  document.getElementById("r-motor").textContent = d.motor;
+  document.getElementById("r-arm").textContent =
+    d.arm.toFixed(1) + " / " + d.board.toFixed(1);
+  document.getElementById("r-fsr").textContent = d.fsr.toFixed(1) + "%";
+  document.getElementById("bar-fsr").style.width =
+    Math.min(100, d.fsr) + "%";
+  document.getElementById("r-cup").textContent = d.cup.toFixed(0) + "%";
+  document.getElementById("bar-cup").style.width = d.cup + "%";
+  document.getElementById("r-vac").textContent = d.vacuum.toFixed(0) + "%";
+  document.getElementById("bar-vac").style.width = d.vacuum + "%";
+
+  // Pills.
+  const setPill = (id, on, onText, offText) => {
+    const el = document.getElementById(id);
+    el.textContent = on ? onText : offText;
+    el.classList.toggle("on", on);
+    el.classList.toggle("off", !on);
+  };
+  setPill("pill-cup-sol", d.cupSolenoid, "SOLENOID ON", "SOLENOID OFF");
+  setPill("pill-cup-pos", d.cupRaised, "RAISED", "LOWERED");
+  setPill("pill-vac-sol", d.vacuumSolenoid, "ON", "OFF");
+  setPill("pill-vac-sw", d.hasVacuum, "VACUUM", "NO VACUUM");
+}
+
+// SSE.
+const connDot = document.getElementById("conn");
+let evt = null;
+function connectSSE() {
+  evt = new EventSource("/events");
+  evt.onopen = () => { connDot.classList.add("live"); };
+  evt.onerror = () => {
+    connDot.classList.remove("live");
+    // EventSource auto-reconnects.
+  };
+  evt.onmessage = (ev) => {
+    try {
+      const d = JSON.parse(ev.data);
+      applyState(d);
+      if (d.log) appendLog(d.log);
+    } catch (e) {
+      console.error("bad event", e, ev.data);
+    }
+  };
+}
+connectSSE();
+
+// Buttons.
+function post(cmd) {
+  fetch("/input", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(cmd),
+  });
+}
+document.getElementById("btn-start").onclick = () => post({ start: true });
+document.getElementById("btn-stop").onclick  = () => post({ stop: true });
+document.getElementById("btn-reset").onclick = () => post({ reset: true });
+</script>
+
+</body>
+</html>
